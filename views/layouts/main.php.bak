@@ -1,0 +1,124 @@
+<?php
+
+/* @var $this \yii\web\View */
+/* @var $content string */
+
+use app\widgets\Alert;
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+
+AppAsset::register($this);
+?>
+<?php $this->beginPage() ?>
+<!DOCTYPE html>
+<html lang="<?= Yii::$app->language ?>">
+<head>
+    <meta charset="<?= Yii::$app->charset ?>">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php $this->registerCsrfMetaTags() ?>
+    <title><?= Html::encode($this->title) ?></title>
+    <?php $this->head() ?>
+</head>
+<body>
+<?php $this->beginBody() ?>
+
+<div class="wrap">
+    <?php
+    NavBar::begin([
+        'brandLabel' => Yii::$app->name,
+        'brandUrl' => Yii::$app->homeUrl,
+        'options' => [
+            'class' => 'navbar-inverse navbar-fixed-top',
+        ],
+    ]);
+    echo Nav::widget([
+        'options' => ['class' => 'navbar-nav navbar-right'],
+        'items' => [
+            [
+                    'label' => 'Möhlətli ödəniş',
+                    'items'=>[
+                          [ 'label' => 'Yeni Möhlətli ödəniş yarat',  'url' => ['/credit/create']],
+                            [ 'label' => 'Ödəniş ( Tarix ilə axtarış ) ',  'url' => ['/credit/payment']],
+							[ 'label' => 'Ödəniş (Aktiv ödənişlər )',  'url' => ['/credit/report-aktiv']],
+							[ 'label' => 'Ödəniş ( Umumi )',  'url' => ['/credit/report']],
+                     ]
+              ],
+		
+            [
+                    'label' => 'Hesabat',
+                    'items'=>[
+                          [ 'label' => 'Creditlar',  'url' => ['/credit/index']],
+                          [ 'label' => 'Əsas Borc  ',  'url' => ['/payment/index']],
+						  [ 'label' => 'Ayliq faiz  ',  'url' => ['/month/index']],
+						  [ 'label' => 'Gecikməyə  ',  'url' => ['/fine/index']],
+							
+                     ]
+              ],
+		
+            [
+                'label' => 'Pul Əməliyyatları',
+                'items'=>[
+                  
+					['label' => 'Xərc əməliyyatı', 'url' => ['/costs/create']],
+					['label' => 'Medaxil əməliyyatı', 'url' => ['/costs/prixod']],
+					['label' => 'Balans ', 'url' => ['/costs/transfer']],
+					['label' => 'Xərclər həsabatı', 'url' => ['/costs/index']],
+					['label' => 'Medaxil həsabatı', 'url' => ['/costs/index2']],
+					//['label' => 'Kassa hesabatı', 'url' => ['/costs/kassa']], 
+					['label' => 'Günün sonu', 'url' => ['/costs/itog', 'date1' => date("Y-m-d"), 'date2' => date("Y-m-d")]],					
+					
+                ]
+            ] ,
+            [
+                    'label' => 'İdarə Etmə',
+                    'items'=>[
+                        [ 'label' => 'Anbar',  'url' => ['/store/index']],
+						[ 'label' => 'Zamin',  'url' => ['/guarantor/index']],
+						['label' => 'Müştərilər', 'url' => ['/client/index']],
+						['label' => 'İstifadəçilər', 'url' => ['/users/index']],
+						['label' => 'Kassa', 'url' => ['/kassa/index']],
+                     ]
+              ],	
+			
+            Yii::$app->user->isGuest ? (
+                ['label' => 'Login', 'url' => ['/site/login']]
+            ) : (
+                '<li>'
+                . Html::beginForm(['/site/logout'], 'post')
+                . Html::submitButton(
+                    'Logout (' . Yii::$app->user->identity->login . ')',
+                    ['class' => 'btn btn-link logout']
+                )
+                . Html::endForm()
+                . '</li>'
+            )
+        ],
+    ]);
+    NavBar::end();
+    ?>
+
+    <div class="container">
+        <?= Breadcrumbs::widget([
+            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+        ]) ?>
+        <?= Alert::widget() ?>
+        <?= $content ?>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="pull-left">&copy; TuReN Computer Service and Group of Programmers Zaqatala <?= date('Y') ?></p>
+
+        <p class="pull-right"><?= Yii::powered() ?></p>
+    </div>
+</footer>
+
+<?php $this->endBody() ?>
+</body>
+</html>
+<?php $this->endPage() ?>

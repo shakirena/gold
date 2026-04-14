@@ -1,0 +1,137 @@
+<?php
+
+use yii\helpers\Html;
+use yii\widgets\DetailView;
+
+/* @var $this yii\web\View */
+/* @var $model app\models\Credit */
+
+$this->title = $model->id;
+
+\yii\web\YiiAsset::register($this);
+?>
+<div class="container">
+<h4>
+    <div class="row">
+        <div class="col-md-3">
+           Müştəri:
+        </div>
+        <div class="col-md-9">
+           <?= \app\models\Client::find()->where(['id'=>$model->id_client])->one()->name;?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            Malın dəyəri:
+        </div>
+        <div class="col-md-9">
+            <?= $model->sum;?> AZN
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+           İlkin ödəniş:
+        </div>
+        <div class="col-md-9">
+            <?= $model->fee;?> AZN
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            Möhlətli ödəniş məbləği:
+        </div>
+        <div class="col-md-9">
+            <?= $model->debt;?> AZN
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            Möhlətli ödəniş müddəti:
+        </div>
+        <div class="col-md-9">
+            <?= $model->month ;?> Ay
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            Aylıq ödəniş:
+        </div>
+        <div class="col-md-9">
+            <?= $model->month_payment ;?> AZN
+        </div>
+    </div>
+	<div class="row">
+        <div class="col-md-3">
+            Komissiya:
+        </div>
+        <div class="col-md-9">
+            <?= $model->commission ;?> AZN
+        </div>
+    </div>
+	
+	<div class="row">
+        <div class="col-md-3">
+            Zamin:
+        </div>
+        <div class="col-md-9">
+            <?php if ($model->id_guarantor) echo  \app\models\Guarantor::find()->where(['id'=>$model->id_guarantor])->one()->name;?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            Sənədin tarixi:
+        </div>
+        <div class="col-md-9">
+            <?= $model->date_create ;?>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3">
+            Başlama tarixi:
+        </div>
+        <div class="col-md-9">
+            <?= $model->date_constribution  ;?>
+        </div>
+    </div>
+</h4>
+
+    <table class="table-rena kv-grid-table table table-bordered  kv-table-wrap">
+        <thead>
+            <tr>
+                <td>Sıra nömrəsi</td>
+                <td>Ödəniş tarixi</td>
+                <td>Aylıq ödəniş</td>
+                <td>Krədit üzrə qalıq</td>
+                <td>Ödənilib</td>
+            </tr>
+        </thead>
+        <tbody>
+        <?php
+            $sum=0; $debt=$model->sum-$model->fee;
+            for($i=1;$i<=$model->month;$i++)
+            {
+               $debt=$debt- $model->month_payment;
+                $sum=$sum+$model->month_payment;
+         ?>
+                <tr>
+                    <td><?= $i;?></td>
+                    <td><?= $model->date_constribution;?></td>
+                    <td><?= $model->month_payment;?></td>
+                    <td><?= $debt;?></td>
+                    <td><?= $sum;?></td>
+                </tr>
+        <?php
+                $dateAt = strtotime('+1 MONTH', strtotime( $model->date_constribution));
+
+                $model->date_constribution = date('Y-m-d', $dateAt);
+
+            }
+        ?>
+
+        </tbody>
+    </table>
+
+    <?= Html::button('<i class="glyphicon glyphicon-print"></i>  Ödəniş qrafiki', ['class' => 'btn btn-success', 'onclick' => "printCredit($model->id)"]); ?>
+    <?= Html::button('<i class="glyphicon glyphicon-print"></i>  Müqavilə', ['class' => 'btn btn-success', 'onclick' => "printStatement($model->id)"]); ?>
+
+</div>

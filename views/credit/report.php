@@ -1,0 +1,214 @@
+<?php
+use yii\bootstrap\Modal;
+use yii\helpers\Html;
+use kartik\grid\GridView;
+use yii\helpers\ArrayHelper;
+use app\models\Client;
+use kartik\date\DatePicker;
+use yii\widgets\Pjax;
+use yii\helpers\Url;
+use kartik\select2\Select2;
+use app\models\Users;
+use app\models\Store;
+/* @var $this yii\web\View */
+/* @var $searchModel app\models\DclientSearch */
+/* @var $dataProvider yii\data\ActiveDataProvider */
+
+//$this->title = 'Dclients';
+//$this->params['breadcrumbs'][] = $this->title;
+?>
+
+
+    <?php
+    Modal::begin([
+        // 'header' => '<h4>Find device</h4>',
+        'options' => [
+            'id' => 'info',
+            'tabindex' => true,
+				
+        ],
+
+        'size' => '300px',
+
+    ]);
+
+    echo '<div id="modalContent"></div>';
+
+    Modal::end();
+    ?>
+	<?php
+    Modal::begin([
+        // 'header' => '<h4>Find device</h4>',
+        'options' => [
+            'id' => 'modal',
+            'tabindex' => true,
+			'class'=>'rena_dialog'
+        ],
+
+        'size' => '300px',
+
+    ]);
+
+    echo '<div id="modalDclient"></div>';
+
+    Modal::end();
+	
+		if ( Yii::$app->user->identity->id_role==1) $role = false;
+		else $role = true;
+    ?>
+<div class="dclient-index noprint">
+
+    <?php $clientList = ArrayHelper::map(Client::find()->all(), 'id', 'name'); ?>
+	<?php $usersList = ArrayHelper::map(Users::find()->all(), 'id', 'fio'); ?>
+	<?php $storesList = ArrayHelper::map(Store::find()->all(), 'id', 'name'); ?>
+ <!-- <?= Html::button(' Опоздавшие',['value' => Url::to(['payment']),'class' => 'btn btn-danger','id' => 'addDclient']); ?>-->
+
+    <br> <br>
+    <?= GridView::widget([
+        'dataProvider' => $dataProvider,
+        'filterModel' => $searchModel,
+        'tableOptions' => [
+
+            'class' => 'table-rena table-rena3',
+            'style' => 'font-size:9pt'
+
+        ],
+		'showFooter' => true,
+        'footerRowOptions' => ['style' => 'font-weight:bold;text-decoration:underline;color:red;'],
+        'striped'=>true,
+        'hover'=>true,
+
+        'columns' => [
+            // ['class' => 'kartik\grid\SerialColumn'],
+			'id',
+
+            [
+
+                'attribute'  => 'id_client',
+                'value' =>'client.name',
+                'filter' => $clientList,
+                'filterWidgetOptions' =>[
+                    'pluginOptions'=>['allowClear'=>true]
+                ],
+                'filterType' =>GridView::FILTER_SELECT2,
+                'width' => '300px',
+                'filterInputOptions' =>['placeholder'=>'Any type'],
+			 'footer' => 'Yekun',
+            ] ,
+			'number',
+			 [
+
+               
+                'value' =>'client.phone',
+            
+            ] ,
+			[
+
+                'attribute'  => 'id_user',
+                'value' =>'idUser.fio',
+                'filter' => $usersList,
+                'filterWidgetOptions' =>[
+                    'pluginOptions'=>['allowClear'=>true]
+                ],
+                'filterType' =>GridView::FILTER_SELECT2,
+                'width' => '300px',
+                'filterInputOptions' =>['placeholder'=>'Any type']
+            ] ,
+			
+			[
+				'attribute'  => 'sum',
+				'footer' =>  round($searchModel->getSumCredit($dataProvider->query,'sum'),2)
+			],
+			
+            'month_payment',
+			[
+				'attribute'  => 'commission',
+				'footer' =>  round($searchModel->getSumCredit($dataProvider->query,'commission'),2)
+			],
+           [
+                'attribute' =>  'date_constribution',
+				'value' => function($model) {
+					$status = $model->dateConstributionStatus;
+					$date = $model->date_constribution;
+					if ($status === 'overdue') return "<div style='background-color:red'>$date</div>";
+					if ($status === 'soon')    return "<div style='background-color:yellow'>$date</div>";
+					return $date;
+				},
+                'format'=>'raw',
+               
+                'width' => '150px',
+
+                'filter' =>DatePicker::widget([
+                    //,
+
+                    'model' => $searchModel,
+                    'attribute' => 'date_start1',
+                   'value' => date('Y-m-d'),
+                    //'options' => ['placeholder' => 'Select issue date ...'],
+                    'type' => DatePicker::TYPE_RANGE,
+                    'attribute2' => 'date_end1',
+                    'value2' => date('Y-m-d'),
+                    'pluginOptions' => [
+                        'format' => 'yyyy-mm-dd',
+                        'autoClose' => true
+                        // 'todayHighlight' => false
+                    ]
+                ]),
+
+                // 'group'=>true,
+
+            ],
+           
+			[
+                'attribute' =>  'date_create',
+               
+                'format'=>'raw',
+               
+                'width' => '150px',
+
+             
+
+                // 'group'=>true,
+
+            ],
+			[
+				'attribute'  =>   'debt',
+				'footer' =>  round($searchModel->getSumCredit($dataProvider->query,'debt'),2)
+			],
+			[
+				 'label'=> 'Ödəniş сəmi',
+				'value'=>'payment',
+				'footer' =>  round($searchModel->getSumCredit($dataProvider->query,'payment'),2)
+			],
+          
+            [
+					
+                    'format' => 'raw',
+                     'value' => function ($model, $index, $widget) {
+                        return Html::a('<i class="glyphicon glyphicon-ok"></i>  ok', ["view-credit?id=$model->id"], ['class' => 'btn btn-success']);
+                        },
+            ],
+		/*	[
+					
+                    'format' => 'raw',
+                     'value' => 'delete'
+            ],
+*/
+             ['class' => 'kartik\grid\ActionColumn'],
+        ],
+    ]); ?>
+
+
+</div>
+<style>
+    @media print {
+        .noprint, .modal-header {
+            content: " ";
+            display: none !important;;visibility: hidden !important;
+        }
+        .modal-content
+        {
+            border: none !important;
+        }
+    }
+</style>

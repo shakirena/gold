@@ -1,0 +1,178 @@
+<?php
+
+namespace app\models;
+use yii\helpers\Html;
+use Yii;
+
+/**
+ * This is the model class for table "credit".
+ *
+ * @property int $id
+ * @property int $id_client
+ * @property string $product_name
+ * @property double $sum
+ * @property double $fee
+ * @property int $month
+ * @property double $month_payment
+ * @property string $date_constribution
+ * @property string $date_create
+ * @property double $debt
+ *
+ * @property Client $client
+ * @property Payment[] $payments
+ */
+class Credit1 extends \yii\db\ActiveRecord
+{
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName()
+    {
+        return 'credit1';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            [['id_client', 'product_name', 'sum', 'fee', 'month', 'month_payment', 'date_constribution', 'date_create'], 'required'],
+            [['id_client', 'month','id_user'], 'integer'],
+            [['sum', 'fee', 'month_payment', 'debt'], 'number'],
+            [['date_constribution', 'date_create'], 'safe'],
+            [['product_name'], 'string', 'max' => 100],
+            [['id_client'], 'exist', 'skipOnError' => true, 'targetClass' => Client::className(), 'targetAttribute' => ['id_client' => 'id']],
+			
+            [['id_user'], 'exist', 'skipOnError' => true, 'targetClass' => Users::className(), 'targetAttribute' => ['id_user' => 'id_user']],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'id_client' => 'Müştəri',
+            'product_name' => 'Malın adı',
+            'sum' => 'Malın qiyməti',
+            'fee' => 'İlkin mədaxil',
+            'month' => 'Ay',
+            'month_payment' => 'Aylıq ödəniş',
+            'date_constribution' => 'Ödəniş tarixi',
+            'date_create' => 'Tarix',
+            'debt' => 'Qalıq',
+			'id_user' => 'Id User',
+        ];
+    }
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getClient()
+    {
+        return $this->hasOne(Client::className(), ['id' => 'id_client']);
+    }
+	public function getIdUser()
+    {
+        return $this->hasOne(Users::className(), ['id_user' => 'id_user']);
+    }
+   /* public function getDateConstribution()
+    {
+       $current=date("Y-m-d");
+       $dateAt=$this->date_constribution;
+       foreach (Payment::find()->where(["id_credit"=>$this->id])->all() as $payment) {
+		   while ($payment->sum>=$this->month_payment ) {
+		   
+           $dateAt = strtotime('+1 MONTH', strtotime($dateAt));
+           $dateAt= date('Y-m-d', $dateAt);
+		   $payment->sum=$payment->sum-$this->month_payment;
+		   }
+		   
+       }
+	   
+
+        $diff = strtotime($dateAt) - strtotime($current);
+        if ($diff<0) return "<div style='background-color:red'>$dateAt</div>";
+        else
+        {
+            $diff=$diff/(60*60*24);
+            if ($diff<=3) return "<div style='background-color:yellow'>$dateAt</div>";
+        }
+
+
+        return $dateAt ;
+    }*/
+	
+	public function getDateConstribution()
+	{
+		 $current=date("Y-m-d");
+		 $diff = strtotime($this->date_constribution) - strtotime($current);
+        if ($diff<0) return "<div style='background-color:red'>$this->date_constribution</div>";
+        else
+        {
+            $diff=$diff/(60*60*24);
+            if ($diff<=3) return "<div style='background-color:yellow'>$this->date_constribution</div>";
+        }
+
+
+        return $this->date_constribution ;
+		
+	}
+
+
+    /**
+     * @return \yii\db\ActiveQuery
+     */
+    public function getPayments()
+    {
+        return $this->hasMany(Payment::className(), ['id_credit' => 'id']);
+    }
+	
+	
+	 public function getPayment()
+    {
+       
+		$sum=Credit::find()->where(["id"=>$this->id])->one();
+		$summa=$sum->sum-$sum->debt;
+	   return $summa;
+    }
+	
+	public function getDelete()
+	{
+		$payment=Payment::find()->where(["id_credit"=>$this->id])->one();
+		if ($payment->id) return "-";
+			  return Html::a('<i class="glyphicon glyphicon-remove"></i> Silmek', ["delete","id"=>$this->id], ['class' => 'btn btn-danger']);
+		
+	}
+	 public function getSumCredit($model,$column){
+        $sum=0;
+		if ($model->where)
+		 $query =  Credit::find()->select("sum(sum) as sum,sum(fee) as fee,sum(debt) as debt")
+            ->joinWith('client')
+            ->andWhere('debt>0')
+			->andWhere($model->where)
+			->one();
+			else 
+			 $query =  Credit::find()->select("sum(sum) as sum,sum(fee) as fee,sum(debt) as debt")
+            ->joinWith('client')
+            ->andWhere('debt>0')
+			
+			->one();
+		if ($column=="payment")
+		{
+			return $query->sum- $query->debt;
+		}
+		else 
+		{
+       
+
+
+        return $query->$column;
+		}
+    }
+	
+	
+}

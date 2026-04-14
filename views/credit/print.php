@@ -1,0 +1,122 @@
+<?php
+
+use yii\helpers\Html;
+use yii\widgets\DetailView;
+use app\assets\AppAsset;
+AppAsset::register($this);
+/* @var $this yii\web\View */
+/* @var $model app\models\Credit */
+
+use app\models\Payment;
+\yii\web\YiiAsset::register($this);
+	$debt=$model->sum-$model->fee;
+?>
+<div class="container" onafterprint="myFunction()">
+<br><br>
+<h2><center><?= \app\models\Client::find()->where(['id'=>$model->id_client])->one()->name;?></center></h2>
+<h2><center>Aylıq ödəniş qrafiki</center></h2></br>
+<h4>
+
+    <table>
+         <tr>
+            <td>  Malın adı:</td>
+            <td>  <?= $model->product_name;?></td>
+        </tr>
+        <tr>
+            <td>  Malın dəyəri:</td>
+            <td>  <?= $model->sum;?></td>
+        </tr>
+        <tr>
+            <td>  İlkin ödəniş: </td>
+            <td><?= $model->fee;?></td>
+        </tr>
+        <tr>
+            <td> Möhlətli ödəniş Məbləği: &nbsp</td>
+            <td>  <?= $debt;?></td>
+        </tr>
+        <tr>
+            <td>  Ödəniş Müddəti: </td>
+            <td> <?= $model->month ;?> Ay</td>
+        </tr>
+        <tr>
+            <td>   Aylıq ödəniş:</td>
+            <td> <?= $model->month_payment ;?> </td>
+        </tr>
+        <tr>
+            <td>Sənədin tarixi:</td>
+            <td> <?= $model->date_create ;?></td>
+        </tr>
+        <td>  Ödənişin başlama tarixi:</td>
+        <td> <?= $model->date_constribution  ;?></td>
+        </tr>
+
+    </table>
+
+</h4>
+<br><br>
+    <table class="table-rena kv-grid-table table table-bordered  kv-table-wrap">
+        <thead>
+            <tr>
+                <td>Sıra nömrəsi</td>
+                <td>Ödəniş tarixi</td>
+                <td>Aylıq ödəniş</td>
+                <td>Ödəniş üzrə qalıq</td>
+               
+            </tr>
+        </thead>
+        <tbody>
+        <?
+            $sum=0;
+			$payment=Payment::find()->select("count(id) as id")->where(["id_credit"=>$model->id])->orderBy("id DESC")->one()->id;
+			 $dateAt = strtotime("-".$payment." MONTH", strtotime( $model->date_constribution));
+
+             $model->date_constribution = date('Y-m-d', $dateAt);
+		
+            for($i=1;$i<=$model->month;$i++)
+            {
+                $debt=$debt-$model->month_payment;
+         ?>
+                <tr>
+                    <td><?= $i;?></td>
+                    <td><?= $model->date_constribution;?></td>
+                    <td><?= $model->month_payment;?></td>
+                    <td><?= round($debt,2);?></td>
+                  
+                </tr>
+				
+        <?
+				
+                $sum=$sum+$model->month_payment;
+                $dateAt = strtotime('+1 MONTH', strtotime( $model->date_constribution));
+
+                $model->date_constribution = date('Y-m-d', $dateAt);
+
+            }
+        ?>
+
+        </tbody>
+    </table>
+
+<p><i>
+Qeyd!<br> Qecikdirilmiş məbləğə və gün sayına görə cərimə hesablanır!
+<br><br><br><br><br><br>
+<table width="100%">
+    <tr>
+        <td>Məsul İcraçı:_____________</td>
+        <td>Müştəri:_____________</td>
+    </tr>
+</table>
+
+
+
+</div>
+<?php
+$script = <<< JS
+
+$(document).ready(function () {
+window.print();
+
+});
+
+JS;
+$this->registerJs($script);

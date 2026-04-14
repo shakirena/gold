@@ -1,0 +1,103 @@
+<?php
+
+use yii\helpers\Html;
+use yii\widgets\ActiveForm;
+use kartik\select2\Select2;
+use yii\helpers\ArrayHelper;
+use yii\helpers\Url;
+use yii\bootstrap\Modal;
+use kartik\date\DatePicker;
+use app\models\TypeCosts;
+use app\models\Kassa;
+/* @var $this yii\web\View */
+/* @var $model app\models\Costs */
+/* @var $form yii\widgets\ActiveForm */
+?>
+
+<div class="costs-form kassa">
+ <?php
+    Modal::begin([
+        'header' => '<h2>Xərc əməliyyatının adı</h2>',
+
+        'size' => 'modal-sm',
+        'options' => [
+            'id' => 'object-create',
+            'tabindex' => true,
+        ],
+    ]);
+
+    echo '<div id="modalContent"></div>';
+
+    Modal::end();
+    ?>
+    <?php $form = ActiveForm::begin(); ?>
+
+   
+	  <div class="row">
+        <div class="col-md-7">
+            <?php
+            $model->id_type= Yii::$app->session->get('id_type');
+
+
+            echo $form->field($model, 'id_type')->widget(Select2::className(),[
+                'data' =>  ArrayHelper::map(TypeCosts::find()->where(["type"=>0])->all(), 'id', 'name'),
+                'options' => [
+                    'placeholder' => 'Seçin',
+
+
+                ],
+
+
+            ])->label("Xərc əməliyyatının adı");
+
+            ?>
+
+        </div>
+		
+        <div class="col-md-5">
+            <?= Html::button('<i class="glyphicon glyphicon-plus"></i>Əlavə et', ['value' => Url::to(['create-type']), 'class' => 'btn btn-danger', 'id' => 'client']) ?>
+        </div>
+    </div>
+
+    <?php
+            echo $form->field($model, 'id_kassa')->widget(Select2::className(),[
+                'data' =>  ArrayHelper::map(Kassa::find()->all(), 'id', 'name'),
+                'options' => [
+                    'placeholder' => 'Seçin',
+
+
+                ],
+
+
+            ]);
+
+    ?>
+	
+    <?= $form->field($model, 'sum')->textInput() ?>
+
+    <?= $form->field($model, 'note')->textarea(['rows' => 6]) ?>
+
+  
+	 <?php
+		$model->datetime= date('Y-m-d');
+        echo $form->field($model, 'datetime')->widget(DatePicker::className(),[
+        'name' => 'check_issue_date',
+        'id' => 'date',
+
+        'options' => ['placeholder' => 'Select issue date ...'],
+        'type' => DatePicker::TYPE_INPUT,
+        'pluginOptions' => [
+            'format' => 'yyyy-mm-dd',
+            'todayHighlight' => false,
+			'autoclose'=>true
+			
+        ]
+    ]) ?>
+
+    <div class="form-group">
+        <?= Html::submitButton($model->isNewRecord ? 'OK' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
+    </div>
+
+    <?php ActiveForm::end(); ?>
+
+</div>

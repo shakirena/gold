@@ -1,0 +1,72 @@
+<?php
+
+namespace app\models;
+
+use Yii;
+
+/**
+ * This is the model class for table "kassa".
+ *
+ * @property int $id
+ * @property string $name
+ * @property int|null $pos
+ *
+ * @property Costs[] $costs
+ */
+class Kassa extends \yii\db\ActiveRecord
+{
+    /**
+     * {@inheritdoc}
+     */
+    public static function tableName()
+    {
+        return 'kassa';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function rules()
+    {
+        return [
+            [['name'], 'required'],
+            [['name'], 'string'],
+            [['pos'], 'integer'],
+        ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'name' => 'Name',
+            'pos' => 'Pos',
+        ];
+    }
+
+    /**
+     * Gets query for [[Costs]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getCosts()
+    {
+        return $this->hasMany(Costs::className(), ['id_kassa' => 'id']);
+    }
+	
+	public function kassaSum($id)
+    {
+		if ($id == 1)
+		{
+			$sum = Balance::find()->select("sum(sum) as sum")->one()->sum - Credit::find()->one()->debt;
+			return round($sum,2);
+		}
+		else{
+       $itog =round( Costs::find()->select("sum(sum) as sum")->where(['id_kassa' =>$id])->one()->sum, 2);
+        return $itog;
+		}
+    }
+}

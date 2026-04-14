@@ -1,0 +1,108 @@
+<?php
+
+use yii\helpers\Html;
+use yii\widgets\DetailView;
+use app\assets\AppAsset;
+AppAsset::register($this);
+/* @var $this yii\web\View */
+/* @var $model app\models\Credit */
+
+
+\yii\web\YiiAsset::register($this);
+?>
+<div class="container" onafterprint="myFunction()">
+<h3><center>LOMBARD</center></h3>
+<h5><center><b>GİROV MÜQAVİLƏSİ </b> №<?=$credit->number?></center></h5>
+<p><b>ZAQATALA şəhəri. </b><?=$client->adress?></p>
+
+<h5><center><b>I.MUQƏDDİMƏ</center></b></h5>
+<p>Birlikdə <b>"Tərəflər"</b> adlanan,bir tərəfdən Azərbaycan  Respublikası Qanunvericiliyinə əsasən <b>fəaliyyət</b> göstərən   <b>LOMBARD</b>-ın Zaqatala  lombard  məntəqəsi üzrə  müdiri  <b>Ramazanova Ülkər Adil</b> şəxsində  (bundan sonra <b>"Borc-verən"</b> adlandırılacaq), ikinci tərəfdən isə Azərbaycan Respublikasının vətəndaşı <b><?=$client->name?></b>
+(şəxsiyyət  vəsiqəsi:  <b><?=$client->passport?>, <?=$client->fin?></b>) (bundan sonra <b>"Girov-qoyan və borc alan"</b> adlandırılacaq), aşağıdakı  şərtlətlə bu müqaviləni (bundan sonra <b>"Müqavilə"</b> adlandırılacaq) bağladılar.</p>
+
+<h5><center><b>II.GİROV MÜQAVİLƏSİNİN PREDMETİ</b></center></h5>
+<p>2.1. <b>"Müqavilə"</b>nin   predmeti <b>"Borc-verən"</b> ilə <b>"Girov-qoyan və borc alan"</b> arasında ZAQATALA  şəhərində bağlanmış <b><?=$credit->date_create?></b>   tarixli  <b><?=$credit->number?></b> saylı "Girov Bileti"ndə nəzərdə tutulmuş öhdəliklərin  icrasının    təminatı  kimi   <b>"Müqavilə"</b>də  qeyd edilmiş   qızıl-zinət əşyalarının girova qoyulması barədə razılığa gəlmələridir. </p>
+<h5><center><b>III.GİROV İLƏ TƏMİN EDİLMİŞ KREDİT BORC MÜQAVİLƏSİNİN PREDMETİ</b></center></h5>
+<p>3.1. <b>"Borc-verən"</b>-lə <b>"Girov-qoyan və borc alan"</b>  arasında bağlanmış  <b>"Girov Bileti"</b>  müqaviləsinə  əsasən <b>"Borc-verən" "Girov-qoyan və borc alan "</b>a  şəxsi məqsədi üçün  aylıq <?= $credit->percant ?> % dərəcəsi   ilə <?= $credit->sum ?> AZN  məbləğində  borc (bundan sonra <b>"Girov ilə təminedilmiş öhdəlik"</b>  adlandırılacaq)  verir.
+</p>
+
+<h5><center><b> IV .GİROVUN PREDMETİ VƏ ONUN QİYMƏTLƏNDİRİLMƏSİ</b></center></h5>
+<p>4.1. <b>"Girov-qoyan və borc alan"  "Müqavilə"</b>nin  3.1-ci  bəndində göstərilən ohdəliyin, yeni verilmiş borcun və ona hesablanmış faizlərin,cərimə faizlərinin,habelə <b>"Girov-bileti"</b> şərtlərinin yerinə yetirilməsinə dair bütün mübahisələrin baxılmasi və həlli ilə bağlı xərclərin ödənilməsinin icrasını təmin etmək  üçün qızıl-zinət əşyalarını (bundan sonra <b>"Girov predmeti"</b> adlandırlacaq) <b>"Borc-verən"</b>in xeyrinə girova qoyur və bu qızıl-zinət əşyalarını <b>"Girov qoyulmuş qiymətlilərin dəyərlərinin  qiymətləndirmə və təhvil-təslim  aktı"</b>na əsasən <b>"Borc-verən"</b>in  sahibliyinə verir. </p>
+<p>4.2.<b>"Girov-qoyan və borc alan"</b> Girov predmetini  qeyri  qanuni yollarla əldə etməməsinə,üçüncü  şəxslərin  hüquqları ilə yüklü edilməməsinə,həbs və ya müsadirə altında olmamasına təminat verir.</p>
+<p>4.3.Girov  predmeti  qiymətləndirici  tərəfindən <?= $credit->commission  ?> AZN  dəyərində  Milli Bankın müvafiq günün məzənnəsinə uyğun olaraq manatla  qiymətləndirilir.</p>
+
+<h5><center><b> V.  TƏRƏFLƏRİN  HÜQUQ VƏ  ÖHDƏLİKLƏRİ</b></center></h5>
+<p>5.1.<b>"Borc-verən"</b>in hüquqları:</p>
+<p>5.1.1.<b>"Müqavilə"</b> ilə  üzərinə  götürdüyü  öhdəlikləri  vaxtında  və  lazımınca  icra etməyi və onların pozulmasına yol verməməyi digər Tərəfdən tələb etmək;</p>
+<p>5.1.2.<b>"Girov-qoyan və borc alan"</b>la   <b>"Borc-verən"</b>  arasında bağlanmış <b>"Girov Bileti"</b> nə əsasən <b>"Girov-qoyan və borc alan"</b> üzərinə götürdüyü öhdəlikləri icra etmədikdə,və ya lazımınca icra etmədikdə tələbləri <b>"Girov predmeti"</b>nə yönəltmək.</p>
+<p>5.2.<b>"Borc-verən"</b>in öhdəlikləri:</p>
+<p>5.2.1.<b>"Müqavilə"</b> çərçivəsində ona təqdim edilmiş məlumatları məxfi saxlamağı və həmin  məlumatları üçüncü şəxslərə açıqlamamağı öz öhtəsinə götürür;</p>
+<p>5.2.2. <b>"Girovla  təmin  edilmiş  öhdəliy"</b>ə  xitam  verildikdə,  girov    predmetini  <b>"Girov qoyulmuş qiymətlərin dəyərlərinin qiymətləndirmə və  təhvil-təslim  aktı"</b>na  əsasən girovdan  azad  etməklə  "Girov-qoyan və borc alan"a geri qaytarır.</p>
+<p>5.3.<b>"Girov-qoyan və borc alan"</b>nın öhdəlikləri:</p>
+<p>5.3.1.<b>"Borc-verən"</b>in əvvəlcədən alınmış yazılı razılığı olmadan Girov  predmetinə dair hər hansı bir formada sərəncam vermir;</p>
+<p>5.3.2.<b>"Müqavilə"</b> qüvvədə olduğu müddətcdə Girov predmetinin bazar dəyərinin azalması müəyyən edilərsə, <b>"Borc-verən"</b>in tələbi ilə Girov predmetinin dəyərini carı borca uyğunlaşdırmaq məqsədilə Girov  predmetini dəyişir, və ya əlavə  girov qoyur.</p>
+
+
+<h5><center><b> VI .GİROV PREDMETİNƏ TUTMANIN YÖNƏLDİLMƏSİ.</b></center></h5>
+<p>6.1.<b>"Girov-qoyan və borc alan""Girov ilə təmin edilmiş öhdəliyi"</b> 10 (on)gün ərzində icra etmədikdə <b>"Borc-verən"</b>in <b>"Girov predmeti"</b>ni öz mülkiyyətinə götürmək hüququ vardır.</p>
+
+<h5><center><b> VII.MÜQAVİLƏYƏ XİTAM VERİLMƏSİ</b></center></h5>
+<p>7.1. Müqaviləyə aşağıdakı hallarda xitam verilir.</p>
+<p>7.1.1.<b>"Borc-verən"</b>ə <b>"Girov-qoyan və borc alan"</b> bu barədə razılığa gəldikdə.</p>
+<p>7.1.2. Girov predmeti  "Borc-verən"in  mülkiyyətinə  keçdikdə.</p>
+<p>7.1.3.Borcun  əsas  məbləği,  ona  hesablanmış   faizlər,    ödənişlərin  gecikdirilməsi     nəticəsində 
+gecikdirilmə müddətinə  hesablanmış  cərimə  faizləri, habelə <b>"Girov-qoyan və borc alan"</b>  ın  öz öhdəliklərinivaxtında və/və ya üçüncü şəxs tərəfindən vaxtında tam həcmdə  ödənildikdə, və ya başqa  şəkildə mövcud olmadıqda.</p>
+<p>7.1.4.  Girov  ilə  təmin  edilmiş  öhdəlik  və  bu  öhdəliklərlə  bağlı  ”Borc-verən”in  tələblər i Girov predmetinin mülkiyyətinə götürülməsi tam həcmdə yerinə yetirildikdə.</p>
+<p>7.1.5. Tərəflərin razılığı ilə Azərbaycan Respublikası qanunvericiliyinə müvafiq qaydada tutmanın “Girov-qoyan”ın digər əmlakına yönəldilməsi ilə Girov ilə təmin edilmiş öhdəlik və bu öhdəliklə bağlı öhdəliklə bağlı <b>“Borc-verən”</b>in  tələbləri tam həcmdə yerinə yetirildikdə.</p>
+
+
+<h5><center><b>VIII. ƏLAVƏ ŞƏRTLƏR</b></center></h5>
+<p>8.1. Müqaviləyə dəyişikliklər və əlavələr <b>"Tərəflər"</b>in qarşılıqlı razılığı əsasında tərtib olunmuş  Müqaviləyə əlavə razılaşma şəklində oluna bilər. Müqaviləni dəyişdirmək və ya ona əlavələr etmək sahəsində tərəflərin bütün hərəkətləri yazılı formada aparılır və <b>"Tərəflər"</b> imzaladıqdan sonra qüvvəyə minir. Müqaviləyə əlavə razılaşma qüvvəyə mindiyi andan, Müqavilənin tərkib hissəsi hesab edilir.</p> 
+<p>8.2. Tərəflərdən biri öz rekvizitlərini dəyişdirdikdə bu barədə digər tərəfi dərhal xəbərdar etməlidir.</p>
+<p>8.3. Müqavilə <b>"Tərəflər"</b>in imzaları və <b>"Borc-verən"</b>in möhürü ilə təsdiq edildiyi andan hüquqi qüvvəyə minir və "Girov-qoyan və borc alan"ın üzərinə götürdüyü borcun əsas məbləğini, ona hesablanmış faizləri, habelə "Girov-qoyan"ın öz öhdəliklərini vaxtında və /və ya lazımınca yerinə yetirməməsi səbəbindən yaranan digər zərəri "Borc-verən"ə tam həcmdə ödəyənədək qüvvədə qalır.</p>
+<p>8.4. Müqavilə qüvvəyə mindiyi andan Müqavilənin predmetinə dair <b>"Tərəflər"</b> arasında əvvəllər aparılmış şifahi, və ya yazılı sövdələşmələr qüvvədən düşmüş hesab edilir.</p>
+<p>8.5. Müqavilə Azərbaycan dilində, eyni hüquqi qüvvəyə malik 2 (iki) nüsxədə tərtib edilmişdir.
+Müqavilənin bir nüsxəsi <b>"Borc-verən"</b>də, bir nüsxəsi isə <b>"Girov-qoyan və borc alan"</b>da saxlanılır. </p>
+
+<h5><center><b>IX. TƏRƏFLƏRİN REKVİZİTLƏRİ</b></center></h5>
+<table border="1" cellpadding="6" cellspacing="0" style="width:100%">
+  <tr>
+    <th>LOMBARD</th>
+    <th>"Girov-qoyan və borc alan"</th>
+  </tr>
+  <tr>
+	<td></td>
+	<td>Ünvan:  <?=$client->adress?><td>
+  </tr>
+  <tr>
+	<td>VÖEN: 5100587832</td>
+	<td>Tel:<td>
+  </tr>
+  <tr>
+	<td>Tel: +994 55 579 22 63</td>
+	<td>Şəxsiyyət vəsiqəsi: <?=$client->passport?><td>
+  </tr>
+  <tr>
+	<td>Ünvan: Bazar ərazisi</td>
+	<td>Faktiki  ünvanı: <?=$client->adress2?><td>
+  </tr>
+  <tr>
+	<td>Müdir: <b>Ramazanova Ülkər Adil qızı</b></td>
+	<td> <td>
+  </tr>
+  <tr>
+	<td>İmza, möhür: _____________________</td>
+	<td>İmza  _________  <td>
+  </tr>
+  <tr>
+</table>
+</div>
+<?php
+$script = <<< JS
+
+$(document).ready(function () {
+window.print();
+
+});
+
+JS;
+$this->registerJs($script);

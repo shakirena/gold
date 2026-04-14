@@ -1,0 +1,223 @@
+<?php
+
+namespace app\controllers;
+use app\models\Costs;
+use app\models\Month;
+use app\models\Fine;
+use app\models\Payment;
+use app\models\Kassa;
+use app\models\Balance;
+use app\models\TypeCosts;
+use app\models\Credit;
+use app\models\CostsSearch;
+use Yii;
+class CostsController extends \yii\web\Controller
+{
+    public function actionIndex()
+    {
+        $searchModel = new CostsSearch();
+		$searchModel->date_start = date('Y-m-d');//." 00:00:00";
+		$searchModel->date_end = date('Y-m-d');//." 23:59:59";
+		$searchModel->type = 0;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    } 
+	public function actionIndex2()
+    {
+        $searchModel = new CostsSearch();
+		$searchModel->date_start = date('Y-m-d');//." 00:00:00";
+		$searchModel->date_end = date('Y-m-d');//." 23:59:59";
+		$searchModel->type = 1;
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+		
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+        ]);
+    }
+	   public function actionDelete($id)
+    {
+		$model = Costs::find()->where(['id'=>$id])->one();
+		if ($model->id_type==3) 
+		{
+			if ($model->fid)
+			{	$payment=Payment::find()->where(["id_credit"=>$model->fid])->one();
+				$credit=Credit::find()->where(["id"=>$payment->id_credit])->one();
+				$credit->debt=$credit->debt+ $model->sum;
+				$credit->save();
+				
+				$payment->delete();
+				
+				$model->delete();
+			}
+			else   return $this->redirect(['index']);	
+		}
+		
+		else if ($model->id_type==2) 
+		{
+			if ($model->fid)
+			{	$payment=Payment::find()->where(["id_credit"=>$model->fid])->one();
+				if ($payment->id)  $this->redirect(['index']);
+				else {
+				$credit=Credit::find()->where(["id"=>$model->fid])->one();
+				$credit->delete();
+				
+				$model->delete();
+				}
+			}
+			else   return $this->redirect(['index']);	
+		} 
+		if ($model->id_type==1) 
+		{
+			$balance= Balance::find()->where(["id_costs" => $id])->one();
+			if($balance->delete()) $model->delete();
+			
+		}
+		else $model->delete();
+        
+
+        return $this->redirect(['index']);
+    }
+	public function actionCreate()
+    {
+        $model = new Costs();
+
+        if ($model->load(Yii::$app->request->post())) {
+			$post=Yii::$app->request->post("Costs");
+			$model->sum = -$model->sum;
+			$model->id_user = Yii::$app->user->identity->id_user;
+			$model->datetime=$post['datetime']." ". date("H:i:s");
+			if ($model->save()) {
+				if ($model->id_type == 4)
+				{
+					$balance = new Balance();
+					$balance->sum = $model->sum;
+					$balance->datetime = $model->datetime;
+					$balance->id_costs = $model->id;
+					$balance->save();
+				
+				
+				}
+			}
+			Yii::$app->session->remove('id_type');
+			
+            return $this->redirect(['index']);
+        } else {
+            return $this->render('create', [
+                'model' => $model,
+            ]);
+        }
+    }
+	public function actionPrixod()
+    {
+        $model = new Costs();
+
+        if ($model->load(Yii::$app->request->post())) {
+			$post=Yii::$app->request->post("Costs");
+			$model->id_user = Yii::$app->user->identity->id_user;
+			$model->datetime=$post['datetime']." ". date("H:i:s");
+			if ($model->save()) 
+				if ($model->id_type == 1)
+			{
+				$balance = new Balance();
+				$balance->sum = $model->sum;
+				$balance->datetime = $model->datetime;
+				$balance->id_costs = $model->id;
+				$balance->save();
+			
+			
+			}
+			Yii::$app->session->remove('id_type');
+            return $this->redirect(['index2']);
+        } else {
+            return $this->render('prixod', [
+                'model' => $model,
+            ]);
+        }
+    }
+	public function actionCreateTypePrixod()
+    {
+        $model = new TypeCosts();
+
+        if ($model->load(Yii::$app->request->post())) {
+			$model->type = 1;
+			$model->save();
+            Yii::$app->session->set('id_type', $model->id);
+			
+            return $this->redirect(['prixod']);
+
+        }
+        return $this->renderAjax('..\type-costs\create', [
+            'model' => $model,
+        ]);
+    }
+	public function actionCreateType()
+    {
+        $model = new TypeCosts();
+
+        if ($model->load(Yii::$app->request->post())) {
+			$model->type = 0;
+			$model->save();
+            Yii::$app->session->set('id_type', $model->id);
+			
+            return $this->redirect(['create']);
+
+        }
+        return $this->renderAjax('..\type-costs\create', [
+            'model' => $model,
+        ]);
+    }
+	
+	public function actionTransfer()
+	{
+		$model = new Costs();
+		$kassa = Kassa::find()->all();
+		$balance = Balance::find()->select("sum(sum) as sum")->one()->sum;
+	 
+        return $this->render('transfer', [
+                'model' => $model,
+				'kassa' => $kassa,
+				'balance' => $balance
+            ]);
+        
+	
+	}
+	
+	public function actionItog($date1,$date2)
+    {
+		
+		$date11=$date1;
+        $date22=$date2;
+		
+		$date1.=' 00:00:00';
+        $date2.=' 23:59:59';
+		
+		$costs=Costs::find()->joinWith(["idType"])->select("sum(sum) as sum")->andWhere("datetime>='$date1' AND datetime<='$date2' AND type_costs.type=0 ")->one()->sum;
+		$prixod=Costs::find()->joinWith(["idType"])->select("sum(sum) as sum")->andWhere("datetime>='$date1' AND datetime<='$date2' AND type_costs.type = 1")->one()->sum;
+		$payment = Payment::find()->select("sum(sum) as sum")->andWhere("datetime>='$date1' AND datetime<='$date2'")->one()->sum;
+		$month = Month::find()->select("sum(sum) as sum")->andWhere("date>='$date1' AND date<='$date2'")->one()->sum;
+		$fine = Fine::find()->select("sum(sum) as sum")->andWhere("date>='$date1' AND date<='$date2'")->one()->sum;
+		$name = Kassa::find()->one()->name;
+		$credit=Credit::find()->select("sum(sum) as sum")->andWhere("date_create>='$date11' AND date_create<='$date22'")->one()->sum;
+	
+        
+        return $this->render('itog', [
+      
+			'costs'=>$costs,
+			'prixod'=>$prixod,
+			'payment'=>$payment,
+			'month' => $month,
+			'fine' => $fine,
+			'name' => $name,
+			'credit' => $credit,
+			'date1' => $date1,
+			'date2' => $date2,
+        ]);
+
+    }
+}

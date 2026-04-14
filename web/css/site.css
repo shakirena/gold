@@ -1,0 +1,180 @@
+html,
+body {
+    height: 100%;
+}
+
+.wrap {
+    min-height: 100%;
+    height: auto;
+    margin: 0 auto -60px;
+    padding: 0 0 60px;
+}
+h4 .row{
+    padding-bottom: 5px;
+}
+.wrap > .container {
+    padding: 70px 15px 20px;
+}
+
+.footer {
+    height: 60px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+}
+.border-bottom
+{
+    border-bottom: 1px solid  black;
+}
+.site-login {
+    box-shadow: 0pt 2px 5px rgba(105, 108, 109, 0.7), 0px 0px 8px 5px rgba(208, 223, 226, 0.4) inset;
+    padding-top: 10px;
+}
+.site-login{
+    margin-top:10%;
+}
+.border-bottom td
+{
+
+    padding-top:8px
+}
+@media print
+{
+    .table-rena {
+        font-size:10pt;
+
+    }
+    .table-rena thead  tr{
+
+        background: linear-gradient(#EDEDED,#CCCCCC);
+
+    }
+
+    .table-rena > thead > tr > th, .table-rena > tbody > tr > th, .table-rena > tfoot > tr > th, .table-rena > thead > tr > td, .table-rena > tbody > tr > td, .table-rena > tfoot > tr > td
+    {
+        border-collapse:collapse;
+        border: 1px solid #C4C4C4 !important;
+        padding: 5px;
+    }
+
+
+}
+.table-rena {
+    font-size:10pt;
+
+}
+.table-rena thead  tr{
+
+    background: linear-gradient(#EDEDED,#CCCCCC);
+
+}
+.table-play  td{
+
+	padding: 5px;
+
+}
+
+.table-play  tr{
+
+	height: 55px;
+
+}
+.table-rena > thead > tr > th, .table-rena > tbody > tr > th, .table-rena > tfoot > tr > th, .table-rena > thead > tr > td, .table-rena > tbody > tr > td, .table-rena > tfoot > tr > td
+{
+    border-collapse:collapse;
+    border: 1px solid #C4C4C4 !important;
+    padding: 5px;
+}
+.jumbotron {
+    text-align: center;
+    background-color: transparent;
+}
+
+.jumbotron .btn {
+    font-size: 21px;
+    padding: 14px 24px;
+}
+
+.not-set {
+    color: #c55;
+    font-style: italic;
+}
+
+/* add sorting icons to gridview sort links */
+a.asc:after, a.desc:after {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    padding-left: 5px;
+}
+
+a.asc:after {
+    content: /*"\e113"*/ "\e151";
+}
+
+a.desc:after {
+    content: /*"\e114"*/ "\e152";
+}
+
+.sort-numerical a.asc:after {
+    content: "\e153";
+}
+
+.sort-numerical a.desc:after {
+    content: "\e154";
+}
+
+.sort-ordinal a.asc:after {
+    content: "\e155";
+}
+
+.sort-ordinal a.desc:after {
+    content: "\e156";
+}
+
+.grid-view th {
+    white-space: nowrap;
+}
+
+.hint-block {
+    display: block;
+    margin-top: 5px;
+    color: #999;
+}
+
+.error-summary {
+    color: #a94442;
+    background: #fdf7f7;
+    border-left: 3px solid #eed3d7;
+    padding: 10px 20px;
+    margin: 0 0 15px 0;
+}
+
+/* align the logout "link" (button in form) of the navbar */
+.nav li > form > button.logout {
+    padding: 15px;
+    border: none;
+}
+
+@media(max-width:767px) {
+    .nav li > form > button.logout {
+        display:block;
+        text-align: left;
+        width: 100%;
+        padding: 10px 15px;
+    }
+}
+
+.nav > li > form > button.logout:focus,
+.nav > li > form > button.logout:hover {
+    text-decoration: none;
+}
+
+.nav > li > form > button.logout:focus {
+    outline: none;
+}
+

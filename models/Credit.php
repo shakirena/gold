@@ -184,6 +184,23 @@ class Credit extends \yii\db\ActiveRecord
         return $query->$column;
 		}
     }
-	
-	
+
+
+    /**
+     * Recalculate debt based on total payments.
+     */
+    public function recalculateDebt()
+    {
+        $totalPaid = (float) Payment::find()
+            ->where(['id_credit' => $this->id])
+            ->sum('sum');
+
+        $this->debt = round($this->sum - $totalPaid, 2);
+
+        if ($this->debt < 0) {
+            $this->debt = 0;
+        }
+
+        $this->save(false);
+    }
 }

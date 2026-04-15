@@ -67,6 +67,16 @@ class FineController extends Controller
     public function actionCreate()
     {
         $model = new Fine();
+        $credit = null;
+
+        $idCredit = Yii::$app->request->get('id_credit');
+        if ($idCredit) {
+            $credit = \app\models\Credit::findOne((int)$idCredit);
+            if ($credit !== null) {
+                $model->id_credit = $credit->id;
+                $model->sum = $credit->debt;
+            }
+        }
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->id]);
@@ -74,6 +84,7 @@ class FineController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'credit' => $credit,
         ]);
     }
 

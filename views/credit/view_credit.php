@@ -4,7 +4,6 @@ use yii\helpers\Html;
 use yii\widgets\DetailView;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
-use kartik\date\DatePicker;
 use yii\bootstrap\Modal;
 /* @var $this yii\web\View */
 /* @var $model app\models\Credit */
@@ -165,23 +164,7 @@ else $date_constribution="-----";
 	<tr>
 		<td><b>Ayliq faiz məbləği ödənişi: </b> </td>
 		<td><?=Html::input("text",'month_payment',0,[ 'size' => '10','id'=>'month_payment'])?></td>
-		<td>
-			  <?=
-					  'Növbəti ödəniş'.DatePicker::widget([
-					'name' => 'check_issue_date',
-					'id' => 'date',
-					
-					'value' => date('Y-m-d',strtotime('+1 MONTH', strtotime( $model->date_constribution))),
-					'options' => ['placeholder' => 'Select issue date ...','disabled' => true,'autoclose'=> true,],
-					'type' => DatePicker::TYPE_INPUT,
-					'pluginOptions' => [
-						'format' => 'yyyy-mm-dd',
-						'todayHighlight' => false,
-						'autoclose' => true
-						
-					]
-				]); ?>
-		</td>
+		<td></td>
 	</tr>
 	<tr>
 		<td><b>Gecikməyə görə ödəniş: </b></td>

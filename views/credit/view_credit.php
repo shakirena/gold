@@ -280,7 +280,7 @@ else $date_constribution="-----";
 				</thead>
 				<tbody>
 				<?php
-				$sum_mn = 0;
+				$sum_fn = 0;
 					foreach ($fine as $fn)
 					{
 						$sum_fn = $sum_fn + $fn->sum ;

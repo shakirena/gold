@@ -158,4 +158,115 @@ class CreditDateTest extends TestCase
         $this->assertNotEmpty($result);
         $this->assertRegExp('/^\d{4}-\d{2}-\d{2}$/', $result);
     }
+
+    // --- Feature #18: smart recalculateNextPaymentDateFromMonth ---
+
+    /**
+     * Вспомогательный метод: логика recalculateNextPaymentDateFromMonth без AR.
+     */
+    private function calcNextDateFromMonth($startDate, $monthPayment, $totalMonthPaid)
+    {
+        if (!$startDate || $monthPayment <= 0) {
+            return $startDate;
+        }
+
+        $monthsCovered = 0;
+        $remaining = (float) $totalMonthPaid;
+        while ($remaining >= $monthPayment) {
+            $monthsCovered++;
+            $remaining -= $monthPayment;
+        }
+
+        $dateAt = $startDate;
+        for ($i = 0; $i < $monthsCovered; $i++) {
+            $dateAt = date('Y-m-d', strtotime('+1 MONTH', strtotime($dateAt)));
+        }
+
+        return $dateAt;
+    }
+
+    /**
+     * AC-1 (#18): Если totalMonth < month_payment — дата не меняется (= start)
+     */
+    public function testSmartRecalcPartialPaymentNoDateChange()
+    {
+        $result = $this->calcNextDateFromMonth('2026-05-01', 300, 200);
+        $this->assertEquals('2026-05-01', $result);
+    }
+
+    /**
+     * AC-1 (#18): Нет Month-платежей вообще — дата = start
+     */
+    public function testSmartRecalcZeroTotalNoDateChange()
+    {
+        $result = $this->calcNextDateFromMonth('2026-05-01', 300, 0);
+        $this->assertEquals('2026-05-01', $result);
+    }
+
+    /**
+     * AC-2 (#18): totalMonth == month_payment → start + 1 месяц
+     */
+    public function testSmartRecalcOneFullMonthShiftsOnce()
+    {
+        $result = $this->calcNextDateFromMonth('2026-05-01', 300, 300);
+        $this->assertEquals('2026-06-01', $result);
+    }
+
+    /**
+     * AC-3 (#18): totalMonth == 2×month_payment → start + 2 месяца
+     */
+    public function testSmartRecalcTwoFullMonthsShiftsTwice()
+    {
+        $result = $this->calcNextDateFromMonth('2026-05-01', 300, 600);
+        $this->assertEquals('2026-07-01', $result);
+    }
+
+    /**
+     * AC-3 (#18): totalMonth == 700 (2×300 + остаток 100) → start + 2 месяца
+     */
+    public function testSmartRecalcOverpaymentClampedToFullMonths()
+    {
+        $result = $this->calcNextDateFromMonth('2026-05-01', 300, 700);
+        $this->assertEquals('2026-07-01', $result);
+    }
+
+    /**
+     * AC-4 (#18): 3 платежа по 300 = накопленно 900 → start + 3 месяца
+     */
+    public function testSmartRecalcThreeMonthsAccumulated()
+    {
+        $result = $this->calcNextDateFromMonth('2026-05-01', 300, 900);
+        $this->assertEquals('2026-08-01', $result);
+    }
+
+    /**
+     * AC-5 (#18): После удаления платежа — корректный пересчёт.
+     * Was: 900 (3 months). After delete 300 → 600 (2 months).
+     */
+    public function testSmartRecalcAfterDeleteCorrectlyRecomputes()
+    {
+        $before = $this->calcNextDateFromMonth('2026-05-01', 300, 900);
+        $this->assertEquals('2026-08-01', $before);
+
+        $after = $this->calcNextDateFromMonth('2026-05-01', 300, 600);
+        $this->assertEquals('2026-07-01', $after);
+    }
+
+    /**
+     * Edge (#18): month_payment = 0 → дата не меняется (защита от деления на ноль)
+     */
+    public function testSmartRecalcZeroMonthPaymentSafe()
+    {
+        $result = $this->calcNextDateFromMonth('2026-05-01', 0, 500);
+        $this->assertEquals('2026-05-01', $result);
+    }
+
+    /**
+     * Edge (#18): startDate = null → возвращается null
+     */
+    public function testSmartRecalcNullStartDateSafe()
+    {
+        $result = $this->calcNextDateFromMonth(null, 300, 300);
+        $this->assertNull($result);
+    }
 }

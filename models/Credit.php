@@ -42,7 +42,7 @@ class Credit extends \yii\db\ActiveRecord
             [['id_client', 'product_name', 'sum', 'month_payment', 'date_constribution', 'date_create','id_store','number'], 'required'],
             [['id_client', 'month','id_user'], 'integer'],
             [['sum', 'fee', 'month_payment', 'debt','commission','percant'], 'number'],
-            [['date_constribution', 'date_create','guarantor','id_guarantor'], 'safe'],
+            [['date_constribution', 'date_constribution_start', 'date_create','guarantor','id_guarantor'], 'safe'],
             [['product_name'], 'string', 'max' => 100],
             [['id_client'], 'exist', 'skipOnError' => true, 'targetClass' => Client::className(), 'targetAttribute' => ['id_client' => 'id']],
 			[['id_store'], 'exist', 'skipOnError' => true, 'targetClass' => Store::className(), 'targetAttribute' => ['id_store' => 'id']],			
@@ -65,6 +65,7 @@ class Credit extends \yii\db\ActiveRecord
             'month' => 'Ay',
             'month_payment' => 'Aylıq ödəniş',
             'date_constribution' => 'Ödəniş tarixi',
+            'date_constribution_start' => 'İlk ödəniş tarixi',
             'date_create' => 'Tarix',
             'debt' => 'Qalıq',
 			'id_user' => 'Satıcı',
@@ -95,7 +96,7 @@ class Credit extends \yii\db\ActiveRecord
     }
 	
 	
-   /* public function getDateConstribution()
+    public function getDateConstribution()
     {
        $current=date("Y-m-d");
        $dateAt=$this->date_constribution;
@@ -120,7 +121,7 @@ class Credit extends \yii\db\ActiveRecord
 
 
         return $dateAt ;
-    }*/
+    }
 	
 	public function getDateConstributionStatus()
 	{
@@ -185,6 +186,68 @@ class Credit extends \yii\db\ActiveRecord
 		}
     }
 
+
+    /**
+     * Recalculate next payment date based on total Month payments from the original start date.
+     * Shifts date_constribution by +1 month for each full month_payment covered by Month records.
+     */
+    public function recalculateNextPaymentDateFromMonth()
+    {
+        $startDate = $this->date_constribution_start;
+        if (!$startDate || $this->month_payment <= 0) {
+            return;
+        }
+
+        $totalPaid = (float) Month::find()
+            ->where(['id_credit' => $this->id])
+            ->sum('sum');
+
+        $monthsCovered = 0;
+        $remaining = $totalPaid;
+        while ($remaining >= $this->month_payment) {
+            $monthsCovered++;
+            $remaining -= $this->month_payment;
+        }
+
+        $dateAt = $startDate;
+        for ($i = 0; $i < $monthsCovered; $i++) {
+            $dateAt = date('Y-m-d', strtotime('+1 MONTH', strtotime($dateAt)));
+        }
+
+        $this->date_constribution = $dateAt;
+        $this->save(false);
+    }
+
+    /**
+     * Recalculate next payment date based on total payments from the original start date.
+     * Shifts date_constribution by +1 month for each full month_payment covered.
+     */
+    public function recalculateNextPaymentDate()
+    {
+        $startDate = $this->date_constribution_start;
+        if (!$startDate || $this->month_payment <= 0) {
+            return;
+        }
+
+        $totalPaid = (float) Payment::find()
+            ->where(['id_credit' => $this->id])
+            ->sum('sum');
+
+        $monthsCovered = 0;
+        $remaining = (float) $totalPaid;
+        while ($remaining >= $this->month_payment) {
+            $monthsCovered++;
+            $remaining -= $this->month_payment;
+        }
+
+        $dateAt = $startDate;
+        for ($i = 0; $i < $monthsCovered; $i++) {
+            $dateAt = date('Y-m-d', strtotime('+1 MONTH', strtotime($dateAt)));
+        }
+
+        $this->date_constribution = $dateAt;
+        $this->save(false);
+    }
 
     /**
      * Recalculate debt based on total payments.

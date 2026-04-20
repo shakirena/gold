@@ -228,7 +228,7 @@ class CreditController extends Controller
 		return $payment->id;
     }
 
-	 public function actionPaymentMonth($sum,$note,$id_credit,$date)
+	 public function actionPaymentMonth($sum,$note,$id_credit)
     {
         $payment=new Month();
         $payment->id_credit=$id_credit;
@@ -236,12 +236,9 @@ class CreditController extends Controller
         $payment->note=$note;
         $payment->date=date("Y:m:d H:i:s");
         $payment->save();
-       
+
 	   $model=Credit::find()->where(["id"=>$id_credit])->one();
-       
-				 
-		
-		$model->date_constribution = $date;
+		$model->date_constribution = date('Y-m-d', strtotime('+1 MONTH', strtotime($model->date_constribution)));
         $model->save();
 		return $payment->id;
     }
@@ -282,13 +279,13 @@ public function actionShowDate($id,$date)
 		//print_r($history);
 		
 	}
-	public function actionDeleteMonth($id,$date)
+	public function actionDeleteMonth($id)
 	{
 		$payment=Month::find()->where(["id"=>$id])->one();
 		$payment ->delete();
-		
+
 		$model=Credit::find()->where(["id"=>$payment->id_credit])->one();
-		$model->date_constribution = $date;
+		$model->date_constribution = date('Y-m-d', strtotime('-1 MONTH', strtotime($model->date_constribution)));
 		
 		//$model->month_payment = round($model->debt * $model->percant/100,2);
 		$model->save();

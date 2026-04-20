@@ -39,7 +39,7 @@ $("#product").click(function(){
 });
 function deleteMonthBtn(id)
 {
-  window.location.href = 'delete-month?id='+id+'&date='+$("#date").val();
+  window.location.href = 'delete-month?id='+id;
 }
 function paymentPlan()
 {
@@ -168,7 +168,7 @@ if ($("#fine").val() > 0 )
     });
 if ($("#month_payment").val() > 0 )
 	{
-		 $.get('payment-month', {sum:$("#month_payment").val(),note:$("#note").val(),id_credit:id,date:$("#date").val()},function(data) {
+		 $.get('payment-month', {sum:$("#month_payment").val(),note:$("#note").val(),id_credit:id},function(data) {
 			month = data;
 			});
 

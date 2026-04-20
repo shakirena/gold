@@ -210,18 +210,11 @@ class CreditController extends Controller
         $payment->note=$note;
         $payment->datetime=date("Y:m:d H:i:s");
         $payment->save();
-        
-		$model=Credit::find()->where(["id"=>$id_credit])->one();
-        $model->debt=$model->debt-$sum;
-		$model->month_payment = round(intval($model->debt * $model->percant)/100,2);
-		
-		$payment2 = Payment::find()->select("sum(sum) as sum,count(id) as id")->where(["id_credit"=>$id_credit])->one();
 
-		
-		//$dateAt = strtotime("+$mn MONTH", strtotime($model->date_constribution));
-        //$dateAt = strtotime('+1 MONTH', strtotime( $model->date_constribution));
-       // $model->date_constribution = date('Y-m-d', $dateAt);
-        if($model->save())
+		$model=Credit::find()->where(["id"=>$id_credit])->one();
+		$model->month_payment = round($model->debt * $model->percant / 100, 2);
+
+        if($model->save(false))
 		{
 				$cost = new Costs();
 				$cost->sum = $sum;
@@ -316,9 +309,9 @@ public function actionShowDate($id,$date)
 		
 		
         $model=Credit::find()->where(["id"=>$payment->id_credit])->one();
-        $model->debt=$model->debt+ $payment->sum;
-		$model->month_payment = round(intval($model->debt * $model->percant)/100,2);
-        if ($model->save())
+        $model->debt=$model->debt + $payment->sum;
+		$model->month_payment = round($model->debt * $model->percant / 100, 2);
+        if ($model->save(false))
 		$payment->delete();
 		
 		    return $this->redirect(['view-credit','id'=>$id_credit]);
@@ -519,30 +512,30 @@ public function actionShowDate($id,$date)
 		$dataProvider->query->andWhere(['is', 'id_credit', null]);
 	
 		$model->id_store = Yii::$app->user->identity->id_store ;
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            $model->debt=$model->sum-$model->fee;
-			$model->id_user=Yii::$app->user->identity->id_user;;
-			$post=Yii::$app->request->post("Credit");
-	        $model->date_create  = $post['date_create'] . " " . date("H:s:i");
-            if ($model->save())
-			{
-				$cost = new Costs();
-				$cost->sum = -$model->sum;
-				$cost->id_type = 2;
-				$cost->id_user = Yii::$app->user->identity->id_user;
-				$cost->datetime = $model->date_create;
-				$cost->id_kassa = 1;
-				$cost->fid = $model->id;
-				$cost->save();
-			
-			
-			
-			}
-			$products=new Products();
-			$products->updateAll(["id_credit"=>$model->id], ['is', 'id_credit', null]);
-			Yii::$app->session->remove('id_client');
-			
-            return $this->redirect(['view', 'id' => $model->id]);
+        if ($model->load(Yii::$app->request->post())) {
+            $model->date_constribution = $model->date_constribution_start;
+            if ($model->save()) {
+                $model->debt=$model->sum-$model->fee;
+                $model->id_user=Yii::$app->user->identity->id_user;
+                $post=Yii::$app->request->post("Credit");
+                $model->date_create  = $post['date_create'] . " " . date("H:s:i");
+                if ($model->save())
+                {
+                    $cost = new Costs();
+                    $cost->sum = -$model->sum;
+                    $cost->id_type = 2;
+                    $cost->id_user = Yii::$app->user->identity->id_user;
+                    $cost->datetime = $model->date_create;
+                    $cost->id_kassa = 1;
+                    $cost->fid = $model->id;
+                    $cost->save();
+                }
+                $products=new Products();
+                $products->updateAll(["id_credit"=>$model->id], ['is', 'id_credit', null]);
+                Yii::$app->session->remove('id_client');
+
+                return $this->redirect(['view', 'id' => $model->id]);
+            }
         }
 
         return $this->render('create', [

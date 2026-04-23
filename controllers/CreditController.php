@@ -241,16 +241,6 @@ class CreditController extends Controller
 		$model->recalculateNextPaymentDateFromMonth((float)$sum, 0);
 		return $payment->id;
     }
-public function actionShowDate($id,$date)
-{
-
-  return $this->renderAjax('show_date', [
-            'id' => $id,
-            'date'=>$date,
-
-        ]);
-
-}
 	public function actionPaymentFine($sum,$note,$id_credit)
     {
         $payment=new Fine();

@@ -260,7 +260,7 @@ else $date_constribution="-----";
 									<td>$mn->date</td>
 									<td>$mn->sum</td>
 									<td>$sum_mn</td>
-									 <td>". Html::button('<i class="glyphicon glyphicon-remove"></i>', ['onclick' => "deletMonth($mn->id,'$model->date_constribution')", 'class' => 'btn btn-danger'])."</td>
+									 <td>". Html::button('<i class="glyphicon glyphicon-remove"></i>', ['onclick' => "deletMonth($mn->id)", 'class' => 'btn btn-danger'])."</td>
 						
 								</tr>
 							";

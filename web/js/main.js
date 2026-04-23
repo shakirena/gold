@@ -23,13 +23,11 @@ $("#guarantor").click(function(){
         .load($(this).attr("value"));
 
 });
-function deletMonth(id, date)
+function deletMonth(id)
 {
-    $("#object-create").modal("show")
-        .find("#modalContent")
-		.load('show-date?id='+id+"&date="+date);
-
-
+    if (confirm('Silmek isteyirsiniz?')) {
+        window.location.href = 'delete-month?id=' + id;
+    }
 }
 $("#product").click(function(){
     $("#product-create").modal("show")

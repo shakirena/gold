@@ -106,7 +106,7 @@ else $date_constribution="-----";
 				   Ödəniş tarixi:
 				</div>
 				<div class="col-md-9">
-					<?= $model->getDateConstribution();?>
+					<?= $model->date_constribution;?>
 				</div>
 			</div>
 	 </div>
@@ -163,7 +163,7 @@ else $date_constribution="-----";
 <table class='table-play'>
 	<tr>
 		<td><b>Ayliq faiz məbləği ödənişi: </b> </td>
-		<td><?=Html::input("text",'month_payment',0,[ 'size' => '10','id'=>'month_payment'])?></td>
+		<td><?=Html::input("text",'month_payment',$model->month_payment,[ 'size' => '10','id'=>'month_payment'])?></td>
 		<td></td>
 	</tr>
 	<tr>

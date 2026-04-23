@@ -159,114 +159,132 @@ class CreditDateTest extends TestCase
         $this->assertRegExp('/^\d{4}-\d{2}-\d{2}$/', $result);
     }
 
-    // --- Feature #18: smart recalculateNextPaymentDateFromMonth ---
+    // --- Feature #18 / Bug fix: delta-based recalculateNextPaymentDateFromMonth ---
+    // Алгоритм: сдвиг currentDate на delta = coveredAfter - coveredBefore месяцев.
+    // Не зависит от date_constribution_start — работает для старых и новых записей.
 
     /**
-     * Вспомогательный метод: логика recalculateNextPaymentDateFromMonth без AR.
+     * Хелпер: воспроизводит логику recalculateNextPaymentDateFromMonth($addedSum, $removedSum).
+     * totalBefore — сумма Month до операции, totalAfter — после.
      */
-    private function calcNextDateFromMonth($startDate, $monthPayment, $totalMonthPaid)
+    private function calcDateWithDelta($currentDate, $monthPayment, $totalBefore, $totalAfter)
     {
-        if (!$startDate || $monthPayment <= 0) {
-            return $startDate;
+        if ($monthPayment <= 0) {
+            return $currentDate;
         }
 
-        $monthsCovered = 0;
-        $remaining = (float) $totalMonthPaid;
-        while ($remaining >= $monthPayment) {
-            $monthsCovered++;
-            $remaining -= $monthPayment;
+        $coveredBefore = 0;
+        $r = (float)$totalBefore;
+        while ($r >= $monthPayment) { $coveredBefore++; $r -= $monthPayment; }
+
+        $coveredAfter = 0;
+        $r = (float)$totalAfter;
+        while ($r >= $monthPayment) { $coveredAfter++; $r -= $monthPayment; }
+
+        $delta = $coveredAfter - $coveredBefore;
+        if ($delta === 0) {
+            return $currentDate;
         }
 
-        $dateAt = $startDate;
-        for ($i = 0; $i < $monthsCovered; $i++) {
-            $dateAt = date('Y-m-d', strtotime('+1 MONTH', strtotime($dateAt)));
+        $dateAt = $currentDate;
+        $direction = $delta > 0 ? '+1 MONTH' : '-1 MONTH';
+        for ($i = 0; $i < abs($delta); $i++) {
+            $dateAt = date('Y-m-d', strtotime($direction, strtotime($dateAt)));
         }
-
         return $dateAt;
     }
 
     /**
-     * AC-1 (#18): Если totalMonth < month_payment — дата не меняется (= start)
+     * AC-1: Первый платёж = 1×mp → дата +1 месяц
      */
-    public function testSmartRecalcPartialPaymentNoDateChange()
+    public function testDeltaFirstPaymentShiftsOnce()
     {
-        $result = $this->calcNextDateFromMonth('2026-05-01', 300, 200);
-        $this->assertEquals('2026-05-01', $result);
-    }
-
-    /**
-     * AC-1 (#18): Нет Month-платежей вообще — дата = start
-     */
-    public function testSmartRecalcZeroTotalNoDateChange()
-    {
-        $result = $this->calcNextDateFromMonth('2026-05-01', 300, 0);
-        $this->assertEquals('2026-05-01', $result);
-    }
-
-    /**
-     * AC-2 (#18): totalMonth == month_payment → start + 1 месяц
-     */
-    public function testSmartRecalcOneFullMonthShiftsOnce()
-    {
-        $result = $this->calcNextDateFromMonth('2026-05-01', 300, 300);
+        $result = $this->calcDateWithDelta('2026-05-01', 300, 0, 300);
         $this->assertEquals('2026-06-01', $result);
     }
 
     /**
-     * AC-3 (#18): totalMonth == 2×month_payment → start + 2 месяца
+     * AC-1: Частичный платёж < mp → дата не меняется
      */
-    public function testSmartRecalcTwoFullMonthsShiftsTwice()
+    public function testDeltaPartialPaymentNoShift()
     {
-        $result = $this->calcNextDateFromMonth('2026-05-01', 300, 600);
-        $this->assertEquals('2026-07-01', $result);
-    }
-
-    /**
-     * AC-3 (#18): totalMonth == 700 (2×300 + остаток 100) → start + 2 месяца
-     */
-    public function testSmartRecalcOverpaymentClampedToFullMonths()
-    {
-        $result = $this->calcNextDateFromMonth('2026-05-01', 300, 700);
-        $this->assertEquals('2026-07-01', $result);
-    }
-
-    /**
-     * AC-4 (#18): 3 платежа по 300 = накопленно 900 → start + 3 месяца
-     */
-    public function testSmartRecalcThreeMonthsAccumulated()
-    {
-        $result = $this->calcNextDateFromMonth('2026-05-01', 300, 900);
-        $this->assertEquals('2026-08-01', $result);
-    }
-
-    /**
-     * AC-5 (#18): После удаления платежа — корректный пересчёт.
-     * Was: 900 (3 months). After delete 300 → 600 (2 months).
-     */
-    public function testSmartRecalcAfterDeleteCorrectlyRecomputes()
-    {
-        $before = $this->calcNextDateFromMonth('2026-05-01', 300, 900);
-        $this->assertEquals('2026-08-01', $before);
-
-        $after = $this->calcNextDateFromMonth('2026-05-01', 300, 600);
-        $this->assertEquals('2026-07-01', $after);
-    }
-
-    /**
-     * Edge (#18): month_payment = 0 → дата не меняется (защита от деления на ноль)
-     */
-    public function testSmartRecalcZeroMonthPaymentSafe()
-    {
-        $result = $this->calcNextDateFromMonth('2026-05-01', 0, 500);
+        $result = $this->calcDateWithDelta('2026-05-01', 300, 0, 200);
         $this->assertEquals('2026-05-01', $result);
     }
 
     /**
-     * Edge (#18): startDate = null → возвращается null
+     * AC-1: Нет платежей → дата не меняется
      */
-    public function testSmartRecalcNullStartDateSafe()
+    public function testDeltaZeroPaymentNoShift()
     {
-        $result = $this->calcNextDateFromMonth(null, 300, 300);
-        $this->assertNull($result);
+        $result = $this->calcDateWithDelta('2026-05-01', 300, 0, 0);
+        $this->assertEquals('2026-05-01', $result);
+    }
+
+    /**
+     * AC-3: Платёж 2×mp сразу → дата +2 месяца
+     */
+    public function testDeltaDoublePaymentShiftsTwice()
+    {
+        $result = $this->calcDateWithDelta('2026-05-01', 300, 0, 600);
+        $this->assertEquals('2026-07-01', $result);
+    }
+
+    /**
+     * Старый кредит с историей: before=5×mp, new=6×mp → дата +1 (не +6)
+     * Ключевой кейс: date_constribution_start не нужен
+     */
+    public function testDeltaExistingCreditNewPaymentShiftsOnce()
+    {
+        $result = $this->calcDateWithDelta('2026-10-01', 300, 1500, 1800);
+        $this->assertEquals('2026-11-01', $result);
+    }
+
+    /**
+     * Переплата накапливается: before=0.8×mp, добавляем 0.5×mp → итого 1.3×mp → дата +1
+     */
+    public function testDeltaAccumulatedOverpaymentCrossesOneBoundary()
+    {
+        $result = $this->calcDateWithDelta('2026-05-01', 300, 240, 390);
+        $this->assertEquals('2026-06-01', $result);
+    }
+
+    /**
+     * AC-5: Удаление платежа — дата -1 месяц (before=3×mp, удалён 1×mp → after=2×mp)
+     */
+    public function testDeltaDeleteMonthReducesDateByOne()
+    {
+        $result = $this->calcDateWithDelta('2026-08-01', 300, 900, 600);
+        $this->assertEquals('2026-07-01', $result);
+    }
+
+    /**
+     * AC-5: Удаление частичного платежа — дата не меняется (before=2.5×mp, deleted=0.3×mp)
+     */
+    public function testDeltaDeletePartialNoChange()
+    {
+        $result = $this->calcDateWithDelta('2026-07-01', 300, 750, 660);
+        $this->assertEquals('2026-07-01', $result);
+    }
+
+    /**
+     * Старый кредит с неверным date_constribution_start: алгоритм игнорирует start.
+     * before=2×mp (уже 2 платежа), новый платёж → after=3×mp → дата +1 от ТЕКУЩЕЙ (не от start)
+     */
+    public function testDeltaIgnoresDateConstributionStart()
+    {
+        // Если бы start=July1 использовался: date = July1+3 = Oct1 (прыжок +3!)
+        // С дельтой: current=Sept1, delta=1 → Oct1 (прыжок +1 ✓)
+        $result = $this->calcDateWithDelta('2026-09-01', 300, 600, 900);
+        $this->assertEquals('2026-10-01', $result);
+    }
+
+    /**
+     * Edge: month_payment = 0 → безопасный возврат
+     */
+    public function testDeltaZeroMonthPaymentSafe()
+    {
+        $result = $this->calcDateWithDelta('2026-05-01', 0, 0, 500);
+        $this->assertEquals('2026-05-01', $result);
     }
 }

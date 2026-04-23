@@ -238,7 +238,7 @@ class CreditController extends Controller
         $payment->save();
 
 	   $model=Credit::find()->where(["id"=>$id_credit])->one();
-		$model->recalculateNextPaymentDateFromMonth();
+		$model->recalculateNextPaymentDateFromMonth((float)$sum, 0);
 		return $payment->id;
     }
 public function actionShowDate($id,$date)
@@ -281,10 +281,11 @@ public function actionShowDate($id,$date)
 	public function actionDeleteMonth($id)
 	{
 		$payment=Month::find()->where(["id"=>$id])->one();
-		$payment ->delete();
+		$deletedSum = (float)$payment->sum;
+		$payment->delete();
 
 		$model=Credit::find()->where(["id"=>$payment->id_credit])->one();
-		$model->recalculateNextPaymentDateFromMonth();
+		$model->recalculateNextPaymentDateFromMonth(0, $deletedSum);
 		return $this->redirect(['view-credit','id'=>$payment->id_credit]);
 	}
 	

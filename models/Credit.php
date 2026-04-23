@@ -191,27 +191,46 @@ class Credit extends \yii\db\ActiveRecord
      * Recalculate next payment date based on total Month payments from the original start date.
      * Shifts date_constribution by +1 month for each full month_payment covered by Month records.
      */
-    public function recalculateNextPaymentDateFromMonth()
+    /**
+     * $addedSum   — sum of the Month record just saved (pass from actionPaymentMonth)
+     * $removedSum — sum of the Month record just deleted (pass from actionDeleteMonth)
+     * Shifts date_constribution by the delta of covered months (no dependency on date_constribution_start).
+     */
+    public function recalculateNextPaymentDateFromMonth($addedSum = 0, $removedSum = 0)
     {
-        $startDate = $this->date_constribution_start;
-        if (!$startDate || $this->month_payment <= 0) {
+        if ($this->month_payment <= 0) {
             return;
         }
 
-        $totalPaid = (float) Month::find()
+        $totalAfter = (float)(Month::find()
             ->where(['id_credit' => $this->id])
-            ->sum('sum');
+            ->sum('sum') ?: 0);
 
-        $monthsCovered = 0;
-        $remaining = $totalPaid;
-        while ($remaining >= $this->month_payment) {
-            $monthsCovered++;
-            $remaining -= $this->month_payment;
+        $totalBefore = $totalAfter - (float)$addedSum + (float)$removedSum;
+
+        $coveredBefore = 0;
+        $r = $totalBefore;
+        while ($r >= $this->month_payment) {
+            $coveredBefore++;
+            $r -= $this->month_payment;
         }
 
-        $dateAt = $startDate;
-        for ($i = 0; $i < $monthsCovered; $i++) {
-            $dateAt = date('Y-m-d', strtotime('+1 MONTH', strtotime($dateAt)));
+        $coveredAfter = 0;
+        $r = $totalAfter;
+        while ($r >= $this->month_payment) {
+            $coveredAfter++;
+            $r -= $this->month_payment;
+        }
+
+        $delta = $coveredAfter - $coveredBefore;
+        if ($delta === 0) {
+            return;
+        }
+
+        $dateAt = $this->date_constribution;
+        $direction = $delta > 0 ? '+1 MONTH' : '-1 MONTH';
+        for ($i = 0; $i < abs($delta); $i++) {
+            $dateAt = date('Y-m-d', strtotime($direction, strtotime($dateAt)));
         }
 
         $this->date_constribution = $dateAt;

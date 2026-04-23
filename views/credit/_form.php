@@ -140,23 +140,24 @@ use yii\widgets\Pjax;
 		<div class="col-md-6">
 		<?php
 			$model->percant = 10;
-			$model->date_constribution= date('Y-m-d');
+			if (!$model->date_constribution_start) $model->date_constribution_start = date('Y-m-d');
 		?>
-		
-	
-			<?= $form->field($model, 'date_constribution')->widget(DatePicker::className(),[
+
+
+			<?= $form->field($model, 'date_constribution_start')->widget(DatePicker::className(),[
 				'name' => 'check_issue_date',
 				'id' => 'date',
 
-				'options' => ['placeholder' => 'Select issue date ...'],
+				'options' => ['placeholder' => 'Select payment date ...'],
 				'type' => DatePicker::TYPE_INPUT,
 				'pluginOptions' => [
 					'format' => 'yyyy-mm-dd',
 					'todayHighlight' => false,
 					'autoclose'=>true
-					
+
 				]
 			]) ?>
+			
 			 
 		
 					<?= $form->field($model, 'id_guarantor')->textInput(['maxlength' => true]) ?>

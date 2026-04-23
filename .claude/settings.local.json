@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmd /c \"dir /s /b D:\\\\OSPanel\\\\*.exe 2>nul | findstr /i php\")",
+      "Bash($PHP *)",
+      "Bash(D:/OSPanel/modules/php/PHP_7.1/php.exe -l models/Payment.php)",
+      "Bash(D:/OSPanel/modules/php/PHP_7.1/php.exe -l models/Credit.php)",
+      "Bash(D:/OSPanel/modules/php/PHP_7.1/php.exe -l tests/unit/models/CreditDebtTest.php)",
+      "Bash(D:/OSPanel/modules/php/PHP_7.1/php.exe vendor/bin/phpunit tests/unit/models/CreditDebtTest.php)",
+      "Bash(D:/OSPanel/modules/php/PHP_7.1/php.exe vendor/phpunit/phpunit/phpunit tests/unit/models/CreditDebtTest.php)",
+      "Bash(D:/OSPanel/modules/php/PHP_7.1/php.exe *)",
+      "Bash(where php *)",
+      "Read(//c/OSPanel/modules/**)",
+      "Read(//d/OSPanel/modules/php/**)",
+      "Bash(\"D:/OSPanel/modules/php/PHP_7.1-x64/php.exe\" vendor/bin/codecept build)",
+      "Bash(\"D:/OSPanel/modules/php/PHP_7.1-x64/php.exe\" vendor/codeception/base/codecept build)",
+      "Bash(\"D:/OSPanel/modules/php/PHP_7.1-x64/php.exe\" vendor/codeception/base/codecept run unit models/FineValidationTest.php models/CreditDebtTest.php)",
+      "Bash(\"D:/OSPanel/modules/php/PHP_7.1-x64/php.exe\" vendor/codeception/base/codecept run unit)",
+      "Bash(D:/OSPanel/modules/database/MySQL-5.7-x64/bin/mysql.exe *)",
+      "Bash(D:/OSPanel/modules/php/PHP_7.1-x64/php.exe *)",
+      "Bash(\"D:/OSPanel/modules/php/PHP_7.1-x64/php.exe\" vendor/codeception/base/codecept run unit models/CreditDebtTest.php)",
+      "Bash(/d/OSPanel/modules/php81/php.exe *)",
+      "Bash(/d/OSPanel/modules/php/PHP_7.1-x64/php.exe *)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(len\\(d\\)\\)\")",
+      "Bash(/c/OSPanel/modules/php/PHP7.1/php.exe vendor/bin/codecept run unit)",
+      "Bash(\"D:/OSPanel/modules/php/PHP_7.1-x64/php.exe\" vendor/bin/codecept run unit)",
+      "Bash(\"D:/OSPanel/modules/php/PHP_7.1-x64/php.exe\" \"D:/OSPanel/domains/gold/vendor/codeception/base/codecept\" run unit)"
+    ]
+  }
+}

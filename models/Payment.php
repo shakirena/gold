@@ -90,11 +90,35 @@ class Payment extends \yii\db\ActiveRecord
 		 $query =  Payment::find()->select("sum(sum) as sum")
 			->andWhere($model->where)
 			->one();
-			else 
+			else
 			 $query = Payment::find()->select("sum(sum) as sum")
 			->one();
-		
+
         return $query->sum;
-		
+
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        $credit = $this->getCredit()->one();
+        if ($credit !== null) {
+            $credit->recalculateDebt();
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function afterDelete()
+    {
+        parent::afterDelete();
+        $credit = Credit::findOne($this->id_credit);
+        if ($credit !== null) {
+            $credit->recalculateDebt();
+        }
     }
 }

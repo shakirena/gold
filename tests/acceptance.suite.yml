@@ -1,0 +1,7 @@
+class_name: AcceptanceTester
+modules:
+    enabled:
+        - Yii2:
+            configFile: 'config/test.php'
+            part: orm
+            cleanup: true

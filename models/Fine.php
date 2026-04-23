@@ -36,6 +36,7 @@ class Fine extends \yii\db\ActiveRecord
             [['date'], 'safe'],
 			[['note'], 'string', 'max' => 100],
             [['id_credit'], 'exist', 'skipOnError' => true, 'targetClass' => Credit::className(), 'targetAttribute' => ['id_credit' => 'id']],
+            ['sum', 'validateFineSum'],
         ];
     }
 
@@ -52,6 +53,29 @@ class Fine extends \yii\db\ActiveRecord
 			'note' => 'Note',
         ];
     }
+    /**
+     * Validates that fine sum does not exceed Credit.debt and debt is positive.
+     *
+     * @param string $attribute the attribute being validated
+     * @param array $params additional parameters
+     */
+    public function validateFineSum($attribute, $params)
+    {
+        if ($this->hasErrors('id_credit') || $this->hasErrors('sum')) {
+            return;
+        }
+        $credit = $this->getCredit()->one();
+        if ($credit === null) {
+            return;
+        }
+        if ($credit->debt <= 0) {
+            $this->addError($attribute, 'Нельзя начислить штраф: остаток долга равен нулю.');
+        }
+        if ($this->sum > $credit->debt) {
+            $this->addError($attribute, 'Сумма штрафа не может превышать остаток долга (' . $credit->debt . ').');
+        }
+    }
+
 	public function getNameCredit()
 	{
 		return Client::find()->where(['id' => $this->getCredit()->one()->id_client])->one()->name;

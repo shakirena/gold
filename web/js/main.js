@@ -146,6 +146,14 @@ function printStatement(id) {
         .appendTo("body");                    // add iframe to the DOM to cause it to load the page
 
 }
+$("#month_payment").on("input", function() {
+    var val = parseFloat($(this).val());
+    if (val > 0) {
+        $("#next-payment-date-row").show();
+    } else {
+        $("#next-payment-date-row").hide();
+    }
+});
 function receivedCredit(id) {
 
 var payment, month,fine;

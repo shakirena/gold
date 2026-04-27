@@ -33,6 +33,26 @@ else $date_constribution="-----";
 
     Modal::end();
     ?>
+<div class="modal fade" id="delete-month-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Ayliq ödənişi sil</h4>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Növbəti ödəniş tarixi:</label>
+                    <input type="date" id="delete-month-date" class="form-control">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Ləğv et</button>
+                <button type="button" class="btn btn-danger" id="delete-month-confirm">Sil</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="row">
 	 <div class="col-md-7">
 			<div class="row">
@@ -265,7 +285,7 @@ else $date_constribution="-----";
 									<td>$mn->date</td>
 									<td>$mn->sum</td>
 									<td>$sum_mn</td>
-									 <td>". Html::button('<i class="glyphicon glyphicon-remove"></i>', ['onclick' => "deletMonth($mn->id)", 'class' => 'btn btn-danger'])."</td>
+									 <td>". Html::button('<i class="glyphicon glyphicon-remove"></i>', ['onclick' => "deletMonth($mn->id, '{$model->date_constribution}')", 'class' => 'btn btn-danger'])."</td>
 						
 								</tr>
 							";

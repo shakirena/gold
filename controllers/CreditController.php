@@ -274,16 +274,21 @@ class CreditController extends Controller
 		//print_r($history);
 		
 	}
-	public function actionDeleteMonth($id)
-	{
-		$payment=Month::find()->where(["id"=>$id])->one();
-		$deletedSum = (float)$payment->sum;
-		$payment->delete();
+    public function actionDeleteMonth($id, $date_constribution = null)
+    {
+        $payment = Month::find()->where(["id" => $id])->one();
+        $deletedSum = (float)$payment->sum;
+        $payment->delete();
 
-		$model=Credit::find()->where(["id"=>$payment->id_credit])->one();
-		$model->recalculateNextPaymentDateFromMonth(0, $deletedSum);
-		return $this->redirect(['view-credit','id'=>$payment->id_credit]);
-	}
+        $model = Credit::find()->where(["id" => $payment->id_credit])->one();
+        if ($date_constribution && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_constribution)) {
+            $model->date_constribution = $date_constribution;
+            $model->save(false);
+        } else {
+            $model->recalculateNextPaymentDateFromMonth(0, $deletedSum);
+        }
+        return $this->redirect(['view-credit', 'id' => $payment->id_credit]);
+    }
 	
 	public function actionDeleteFine($id)
 	{

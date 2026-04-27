@@ -23,22 +23,25 @@ $("#guarantor").click(function(){
         .load($(this).attr("value"));
 
 });
-function deletMonth(id)
-{
-    if (confirm('Silmek isteyirsiniz?')) {
-        window.location.href = 'delete-month?id=' + id;
-    }
+function deletMonth(id, currentDate) {
+    var d = new Date(currentDate);
+    d.setMonth(d.getMonth() - 1);
+    var prefill = d.toISOString().slice(0, 10);
+    $('#delete-month-date').val(prefill);
+    $('#delete-month-modal').data('month-id', id).modal('show');
 }
+$('#delete-month-confirm').on('click', function() {
+    var id = $('#delete-month-modal').data('month-id');
+    var date = $('#delete-month-date').val();
+    $('#delete-month-modal').modal('hide');
+    window.location.href = 'delete-month?id=' + id + '&date_constribution=' + encodeURIComponent(date);
+});
 $("#product").click(function(){
     $("#product-create").modal("show")
         .find("#modalContent")
         .load($(this).attr("value"));
 
 });
-function deleteMonthBtn(id)
-{
-  window.location.href = 'delete-month?id='+id;
-}
 function paymentPlan()
 {
 	 $.get('set-payment', {sum:$("#sum").val(),fee:$("#fee").val(),month:$("#month").val()},function(data) {

@@ -146,14 +146,17 @@ function printStatement(id) {
         .appendTo("body");                    // add iframe to the DOM to cause it to load the page
 
 }
-$("#month_payment").change(function(){
-
-  $("#date").prop('disabled',false);
-
-})
+$("#month_payment").on("input", function() {
+    var val = parseFloat($(this).val());
+    if (val > 0) {
+        $("#next-payment-date-row").show();
+    } else {
+        $("#next-payment-date-row").hide();
+    }
+});
 function receivedCredit(id) {
 
-var payment, month,fine; 
+var payment, month,fine;
 if ($("#sum").val() > 0)
     $.get('received-credit', {sum:$("#sum").val(),note:$("#note").val(),id_credit:id},function(data) {
 		payment = data;
@@ -161,12 +164,12 @@ if ($("#sum").val() > 0)
     });
 if ($("#fine").val() > 0 )
 	 $.get('payment-fine', {sum:$("#fine").val(),note:$("#note").val(),id_credit:id},function(data) {
-		
+
 		fine = data;
     });
 if ($("#month_payment").val() > 0 )
 	{
-		 $.get('payment-month', {sum:$("#month_payment").val(),note:$("#note").val(),id_credit:id},function(data) {
+		 $.get('payment-month', {sum:$("#month_payment").val(),note:$("#note").val(),id_credit:id,date_constribution:$("#next_payment_date").val()},function(data) {
 			month = data;
 			});
 

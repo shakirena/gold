@@ -98,3 +98,19 @@
 | TC-20-02 | #20 | #20 | AC-4: регрессия 53/53 тестов | Critical | Full suite |
 | TC-20-03 | #20 | #20 | AC-2: 1×mp → дата +1 (логика #18) | Critical | CreditDateTest::testSmartRecalcOneFullMonthShiftsOnce |
 | TC-20-04 | #20 | #20 | AC-3: 2×mp → дата +2 (корректное поведение) | High | CreditDateTest::testSmartRecalcTwoFullMonthsShiftsTwice |
+| TC-23-01 | #23 | #23 | AC-1: today's date accepted as-is | Critical | CreditPaymentMonthDateTest::testTodayDateIsAccepted |
+| TC-23-02 | #23 | #23 | AC-2: future date accepted as-is | Critical | CreditPaymentMonthDateTest::testFutureDateIsAccepted |
+| TC-23-02b | #23 | #23 | AC-2: tomorrow (+1 day) accepted | High | CreditPaymentMonthDateTest::testTomorrowDateIsAccepted |
+| TC-23-03 | #23 | #23 | AC-3: past date → fallback to recalc | Critical | CreditPaymentMonthDateTest::testPastDateFallsBackToRecalc |
+| TC-23-03b | #23 | #23 | AC-3: old past date → fallback | High | CreditPaymentMonthDateTest::testOldPastDateFallsBackToRecalc |
+| TC-23-04 | #23 | #23 | AC-4: wrong format (DD-MM-YYYY) → fallback | Critical | CreditPaymentMonthDateTest::testInvalidFormatStringFallsBackToRecalc |
+| TC-23-04b | #23 | #23 | AC-4: empty string → fallback | Critical | CreditPaymentMonthDateTest::testEmptyStringFallsBackToRecalc |
+| TC-23-04c | #23 | #23 | AC-4: arbitrary text → fallback | High | CreditPaymentMonthDateTest::testArbitraryTextFallsBackToRecalc |
+| TC-23-04d | #23 | #23 | AC-4: datetime string → fallback | High | CreditPaymentMonthDateTest::testDateWithTimeFallsBackToRecalc |
+| TC-23-04e | #23 | #23 | AC-4: alpha chars → fallback | Medium | CreditPaymentMonthDateTest::testAlphanumericStringFallsBackToRecalc |
+| TC-23-04f | #23 | #23 | AC-4: partial format (YYYY-MM-D) → fallback | Medium | CreditPaymentMonthDateTest::testPartiallyMatchingFormatFallsBackToRecalc |
+| TC-23-05 | #23 | #23 | AC-5: null → fallback to recalc | Critical | CreditPaymentMonthDateTest::testNullDateFallsBackToRecalc |
+| TC-23-06 | #23 | #23 | Regression: accepted date does not call recalculate | Critical | CreditPaymentMonthDateTest::testAcceptedDateDoesNotTriggerRecalculate |
+| TC-23-07 | #23 | #23 | Regression: rejected date calls recalculate once | Critical | CreditPaymentMonthDateTest::testRejectedDateTriggersRecalculateOnce |
+| TC-23-08 | #23 | #23 | NFR: delta algorithm unaffected by feature #23 | High | CreditPaymentMonthDateTest::testDeltaAlgorithmRegression |
+| TC-23-09 | #23 | #23 | NFR: full suite regression — all tests green | Critical | Full suite |

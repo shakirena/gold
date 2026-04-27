@@ -163,10 +163,10 @@ else $date_constribution="-----";
 <table class='table-play'>
 	<tr>
 		<td><b>Ayliq faiz məbləği ödənişi: </b> </td>
-		<td><?=Html::input("text",'month_payment',$model->month_payment,[ 'size' => '10','id'=>'month_payment'])?></td>
+		<td><?=Html::input("text",'month_payment', 0, [ 'size' => '10','id'=>'month_payment'])?></td>
 		<td></td>
 	</tr>
-	<tr>
+	<tr id="next-payment-date-row" style="display:none">
 		<td><b>Növbəti ödəniş tarixi: </b></td>
 		<td><?=Html::input("date",'next_payment_date', date('Y-m-d', strtotime('+1 MONTH', strtotime($model->date_constribution))), ['id'=>'next_payment_date'])?></td>
 		<td></td>

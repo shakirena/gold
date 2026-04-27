@@ -121,3 +121,12 @@
 | TC-27-05 | #27 | #28 | AC-5: date pre-filled +1 month when row visible | Medium | Frontend (visual) |
 | TC-27-06 | #27 | #28 | Regression: debt/fine payments unaffected | High | Frontend (regression) |
 | TC-27-07 | #27 | #28 | NFR: all 69 unit tests remain green | Critical | Full suite |
+| TC-30-01 | #30 | #31 | AC-1: modal opens on delete click | Critical | Frontend |
+| TC-30-02 | #30 | #31 | AC-2: date pre-filled with date_constribution - 1M | Critical | Frontend |
+| TC-30-03 | #30 | #31 | AC-3: user can change date | High | Frontend |
+| TC-30-04 | #30 | #31 | AC-4: confirm sends correct date to actionDeleteMonth | Critical | Integration |
+| TC-30-05 | #30 | #31 | AC-5: cancel closes modal without deleting | Critical | Frontend |
+| TC-30-06 | #30 | #31 | Past dates accepted in delete flow (ADR-3) | High | Business Rule |
+| TC-30-07 | #30 | #31 | actionDeleteMonth fallback when no date param | High | Backend |
+| TC-30-08 | #30 | #31 | Malformed date falls back to auto-recalc | High | Security |
+| TC-30-09 | #30 | #31 | Regression: 69 unit tests green | Critical | Full suite |

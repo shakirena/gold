@@ -114,3 +114,10 @@
 | TC-23-07 | #23 | #23 | Regression: rejected date calls recalculate once | Critical | CreditPaymentMonthDateTest::testRejectedDateTriggersRecalculateOnce |
 | TC-23-08 | #23 | #23 | NFR: delta algorithm unaffected by feature #23 | High | CreditPaymentMonthDateTest::testDeltaAlgorithmRegression |
 | TC-23-09 | #23 | #23 | NFR: full suite regression — all tests green | Critical | Full suite |
+| TC-27-01 | #27 | #28 | AC-1: date row hidden on page load | Critical | Frontend (visual) |
+| TC-27-02 | #27 | #28 | AC-2: date row appears when #month_payment > 0 | Critical | Frontend (interaction) |
+| TC-27-03 | #27 | #28 | AC-3: date row hides when #month_payment cleared | Critical | Frontend (interaction) |
+| TC-27-04 | #27 | #28 | AC-4: #month_payment defaults to 0 | High | Frontend (visual) |
+| TC-27-05 | #27 | #28 | AC-5: date pre-filled +1 month when row visible | Medium | Frontend (visual) |
+| TC-27-06 | #27 | #28 | Regression: debt/fine payments unaffected | High | Frontend (regression) |
+| TC-27-07 | #27 | #28 | NFR: all 69 unit tests remain green | Critical | Full suite |

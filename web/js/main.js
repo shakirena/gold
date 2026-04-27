@@ -23,22 +23,25 @@ $("#guarantor").click(function(){
         .load($(this).attr("value"));
 
 });
-function deletMonth(id)
-{
-    if (confirm('Silmek isteyirsiniz?')) {
-        window.location.href = 'delete-month?id=' + id;
-    }
+function deletMonth(id, currentDate) {
+    var d = new Date(currentDate);
+    d.setMonth(d.getMonth() - 1);
+    var prefill = d.toISOString().slice(0, 10);
+    $('#delete-month-date').val(prefill);
+    $('#delete-month-modal').data('month-id', id).modal('show');
 }
+$('#delete-month-confirm').on('click', function() {
+    var id = $('#delete-month-modal').data('month-id');
+    var date = $('#delete-month-date').val();
+    $('#delete-month-modal').modal('hide');
+    window.location.href = 'delete-month?id=' + id + '&date_constribution=' + encodeURIComponent(date);
+});
 $("#product").click(function(){
     $("#product-create").modal("show")
         .find("#modalContent")
         .load($(this).attr("value"));
 
 });
-function deleteMonthBtn(id)
-{
-  window.location.href = 'delete-month?id='+id;
-}
 function paymentPlan()
 {
 	 $.get('set-payment', {sum:$("#sum").val(),fee:$("#fee").val(),month:$("#month").val()},function(data) {
@@ -146,14 +149,17 @@ function printStatement(id) {
         .appendTo("body");                    // add iframe to the DOM to cause it to load the page
 
 }
-$("#month_payment").change(function(){
-
-  $("#date").prop('disabled',false);
-
-})
+$("#month_payment").on("input", function() {
+    var val = parseFloat($(this).val());
+    if (val > 0) {
+        $("#next-payment-date-row").show();
+    } else {
+        $("#next-payment-date-row").hide();
+    }
+});
 function receivedCredit(id) {
 
-var payment, month,fine; 
+var payment, month,fine;
 if ($("#sum").val() > 0)
     $.get('received-credit', {sum:$("#sum").val(),note:$("#note").val(),id_credit:id},function(data) {
 		payment = data;
@@ -161,12 +167,12 @@ if ($("#sum").val() > 0)
     });
 if ($("#fine").val() > 0 )
 	 $.get('payment-fine', {sum:$("#fine").val(),note:$("#note").val(),id_credit:id},function(data) {
-		
+
 		fine = data;
     });
 if ($("#month_payment").val() > 0 )
 	{
-		 $.get('payment-month', {sum:$("#month_payment").val(),note:$("#note").val(),id_credit:id},function(data) {
+		 $.get('payment-month', {sum:$("#month_payment").val(),note:$("#note").val(),id_credit:id,date_constribution:$("#next_payment_date").val()},function(data) {
 			month = data;
 			});
 

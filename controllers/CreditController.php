@@ -228,18 +228,24 @@ class CreditController extends Controller
 		return $payment->id;
     }
 
-	 public function actionPaymentMonth($sum,$note,$id_credit)
+    public function actionPaymentMonth($sum, $note, $id_credit, $date_constribution = null)
     {
-        $payment=new Month();
-        $payment->id_credit=$id_credit;
-        $payment->sum=$sum;
-        $payment->note=$note;
-        $payment->date=date("Y:m:d H:i:s");
+        $payment = new Month();
+        $payment->id_credit = $id_credit;
+        $payment->sum = $sum;
+        $payment->note = $note;
+        $payment->date = date("Y:m:d H:i:s");
         $payment->save();
 
-	   $model=Credit::find()->where(["id"=>$id_credit])->one();
-		$model->recalculateNextPaymentDateFromMonth((float)$sum, 0);
-		return $payment->id;
+        $model = Credit::find()->where(["id" => $id_credit])->one();
+        if ($date_constribution && preg_match('/^\d{4}-\d{2}-\d{2}$/', $date_constribution)
+            && strtotime($date_constribution) >= strtotime(date('Y-m-d'))) {
+            $model->date_constribution = $date_constribution;
+            $model->save(false);
+        } else {
+            $model->recalculateNextPaymentDateFromMonth((float)$sum, 0);
+        }
+        return $payment->id;
     }
 	public function actionPaymentFine($sum,$note,$id_credit)
     {

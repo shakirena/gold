@@ -167,6 +167,11 @@ else $date_constribution="-----";
 		<td></td>
 	</tr>
 	<tr>
+		<td><b>Növbəti ödəniş tarixi: </b></td>
+		<td><?=Html::input("date",'next_payment_date', date('Y-m-d', strtotime('+1 MONTH', strtotime($model->date_constribution))), ['id'=>'next_payment_date'])?></td>
+		<td></td>
+	</tr>
+	<tr>
 		<td><b>Gecikməyə görə ödəniş: </b></td>
 		<td><?=Html::input("text",'sum',0,[ 'size' => '10','id'=>'fine'])?></td>
 		<td></td>
